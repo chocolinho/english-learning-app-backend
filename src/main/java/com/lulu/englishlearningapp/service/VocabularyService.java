@@ -116,4 +116,25 @@ public class VocabularyService {
         return vocabularyRepository.findAll(pageable)
                 .map(this::mapToResponse);
     }
+
+    public Page<VocabularyResponse> searchVocabularyWithPagination(
+            String keyword,
+            int page,
+            int size,
+            String sortField) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortField)
+        );
+
+        return vocabularyRepository
+                .findByWordContainingIgnoreCaseOrMeaningContainingIgnoreCase(
+                        keyword,
+                        keyword,
+                        pageable
+                )
+                .map(this::mapToResponse);
+    }
     }

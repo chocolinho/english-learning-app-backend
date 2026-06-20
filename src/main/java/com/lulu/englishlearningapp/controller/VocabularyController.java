@@ -49,9 +49,10 @@ public class VocabularyController {
     @GetMapping("/page")
     public Page<VocabularyResponse> getVocabulariesWithPagination(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort) {
 
-        return vocabularyService.getVocabulariesWithPagination(page, size);
+        return vocabularyService.getVocabulariesWithPagination(page, size, sort);
     }
     @GetMapping("/search")
     public List<VocabularyResponse> searchVocabulary(
@@ -59,5 +60,20 @@ public class VocabularyController {
 
         return vocabularyService.searchVocabulary(keyword);
     }
+    @GetMapping("/search-page")
+    public Page<VocabularyResponse> searchVocabularyWithPagination(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort) {
+
+        return vocabularyService.searchVocabularyWithPagination(
+                keyword,
+                page,
+                size,
+                sort
+        );
     }
+    }
+
 
