@@ -4,6 +4,7 @@ import com.lulu.englishlearningapp.entity.Vocabulary;
 import jakarta.validation.Valid;
 import com.lulu.englishlearningapp.service.VocabularyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import com.lulu.englishlearningapp.dto.VocabularyRequest;
 import java.util.List;
@@ -45,4 +46,12 @@ public class VocabularyController {
     public List<VocabularyResponse> getVocabulariesByTopicId(@PathVariable Long topicId) {
         return vocabularyService.getVocabulariesByTopicId(topicId);
     }
-}
+    @GetMapping("/page")
+    public Page<VocabularyResponse> getVocabulariesWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        return vocabularyService.getVocabulariesWithPagination(page, size);
+    }
+    }
+
