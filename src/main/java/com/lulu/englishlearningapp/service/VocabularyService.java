@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 @Service
 @RequiredArgsConstructor
 public class VocabularyService {
@@ -91,15 +92,7 @@ public class VocabularyService {
                 .toList();
     }
 
-    public Page<VocabularyResponse> getVocabulariesWithPagination(
-            int page,
-            int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        return vocabularyRepository.findAll(pageable)
-                .map(this::mapToResponse);
-    }
     public List<VocabularyResponse> searchVocabulary(String keyword) {
 
         return vocabularyRepository
@@ -108,4 +101,19 @@ public class VocabularyService {
                 .map(this::mapToResponse)
                 .toList();
     }
-}
+
+    public Page<VocabularyResponse> getVocabulariesWithPagination(
+            int page,
+            int size,
+            String sortField) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortField)
+        );
+
+        return vocabularyRepository.findAll(pageable)
+                .map(this::mapToResponse);
+    }
+    }
