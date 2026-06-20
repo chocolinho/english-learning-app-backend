@@ -1,0 +1,65 @@
+package com.lulu.englishlearningapp.service;
+
+import com.lulu.englishlearningapp.dto.QuizAnswerRequest;
+import com.lulu.englishlearningapp.dto.QuizSubmitRequest;
+import com.lulu.englishlearningapp.dto.QuizSubmitResponse;
+import com.lulu.englishlearningapp.entity.QuizResult;
+import com.lulu.englishlearningapp.entity.User;
+import com.lulu.englishlearningapp.entity.Vocabulary;
+import com.lulu.englishlearningapp.repository.QuizResultRepository;
+import com.lulu.englishlearningapp.repository.VocabularyRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class QuizService {
+
+    private final QuizResultRepository quizResultRepository;
+    private final VocabularyRepository vocabularyRepository;
+
+    public QuizSubmitResponse submitQuiz(
+            QuizSubmitRequest request,
+            User user) {
+
+        int totalQuestions = request.getAnswers().size();
+        int correctAnswers = 0;
+
+        for (QuizAnswerRequest answerRequest : request.getAnswers()) {
+            Vocabulary vocabulary = vocabularyRepository.findById(answerRequest.getVocabularyId())
+                    .orElseThrow(() -> new RuntimeException("Vocabulary not found"));
+
+            if (vocabulary.getMeaning().equalsIgnoreCase(answerRequest.getAnswer().trim())) {
+                correctAnswers++;
+            }
+        }
+
+        double score = totalQuestions == 0 ? 0 : (correctAnswers * 100.0) / totalQuestions;
+
+        QuizResult quizResult = QuizResult.builder()
+                .totalQuestions(totalQuestions)
+                .correctAnswers(correctAnswers)
+                .score(score)
+                .submittedAt(LocalDateTime.now())
+                .user(user)
+                .build();
+
+        quizResultRepository.save(quizResult);
+
+        return QuizSubmitResponse.builder()
+                .totalQuestions(totalQuestions)
+                .correctAnswers(correctAnswers)
+                .score(score)
+                .build();
+    }
+
+    public List<QuizResult> getQuizResults() {
+        return quizResultRepository.findAll();
+    }
+    public List<QuizResult> getMyQuizResults(User user) {
+        return quizResultRepository.findByUserId(user.getId());
+    }
+}
