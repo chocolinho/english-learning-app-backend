@@ -1,17 +1,22 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import MainLayout from "./layouts/MainLayout";
 import Topics from "./pages/Topics";
 import Vocabularies from "./pages/Vocabularies";
 import QuizResults from "./pages/QuizResults";
+import Learn from "./pages/Learn";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
+
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Login />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<Login />} />
 
                 <Route
                     element={
@@ -21,6 +26,7 @@ function App() {
                     }
                 >
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/learn" element={<Learn />} />
                     <Route path="/topics" element={<Topics />} />
                     <Route path="/vocabularies" element={<Vocabularies />} />
                     <Route path="/quiz" element={<QuizResults />} />
