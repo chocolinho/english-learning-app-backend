@@ -10,6 +10,11 @@ export const createVocabulary = async (vocabulary) => {
     return response.data;
 };
 
+export const updateVocabulary = async (id, vocabulary) => {
+    const response = await axiosClient.put(`/api/vocabularies/${id}`, vocabulary);
+    return response.data;
+};
+
 export const deleteVocabulary = async (id) => {
     await axiosClient.delete(`/api/vocabularies/${id}`);
 };

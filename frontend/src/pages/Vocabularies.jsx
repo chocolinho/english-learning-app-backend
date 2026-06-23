@@ -4,6 +4,7 @@ import {
     createVocabulary,
     deleteVocabulary,
     getVocabularies,
+    updateVocabulary,
 } from "../services/vocabularyService";
 
 function Vocabularies() {
@@ -17,19 +18,44 @@ function Vocabularies() {
         topicId: "",
     });
 
-    const fetchData = async () => {
-        const [vocabularyData, topicData] = await Promise.all([
-            getVocabularies(),
-            getTopics(),
-        ]);
+    const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-        setVocabularies(vocabularyData);
-        setTopics(topicData);
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+
+            const [vocabularyData, topicData] = await Promise.all([
+                getVocabularies(),
+                getTopics(),
+            ]);
+
+            setVocabularies(vocabularyData);
+            setTopics(topicData);
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Failed to load vocabulary data.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    const resetForm = () => {
+        setForm({
+            word: "",
+            meaning: "",
+            exampleSentence: "",
+            topicId: "",
+        });
+
+        setEditingId(null);
+        setErrorMessage("");
+    };
 
     const handleChange = (e) => {
         setForm({
@@ -38,125 +64,266 @@ function Vocabularies() {
         });
     };
 
-    const handleCreate = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage("");
 
-        if (!form.word || !form.meaning || !form.topicId) return;
+        if (!form.word.trim()) {
+            setErrorMessage("Word is required.");
+            return;
+        }
 
-        await createVocabulary({
-            ...form,
+        if (!form.meaning.trim()) {
+            setErrorMessage("Meaning is required.");
+            return;
+        }
+
+        if (!form.topicId) {
+            setErrorMessage("Please select a topic.");
+            return;
+        }
+
+        const payload = {
+            word: form.word.trim(),
+            meaning: form.meaning.trim(),
+            exampleSentence: form.exampleSentence.trim(),
             topicId: Number(form.topicId),
-        });
+        };
+
+        try {
+            if (editingId) {
+                await updateVocabulary(editingId, payload);
+            } else {
+                await createVocabulary(payload);
+            }
+
+            resetForm();
+            fetchData();
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Failed to save vocabulary.");
+        }
+    };
+
+    const handleEdit = (vocabulary) => {
+        setEditingId(vocabulary.id);
 
         setForm({
-            word: "",
-            meaning: "",
-            exampleSentence: "",
-            topicId: "",
+            word: vocabulary.word || "",
+            meaning: vocabulary.meaning || "",
+            exampleSentence: vocabulary.exampleSentence || "",
+            topicId: vocabulary.topicId ? String(vocabulary.topicId) : "",
         });
 
-        fetchData();
+        setErrorMessage("");
     };
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this vocabulary?")) return;
 
-        await deleteVocabulary(id);
-        fetchData();
+        try {
+            await deleteVocabulary(id);
+
+            if (editingId === id) {
+                resetForm();
+            }
+
+            fetchData();
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Failed to delete vocabulary.");
+        }
     };
 
     return (
         <div>
-            <h1 className="text-3xl font-bold mb-6">Vocabularies</h1>
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-800">
+                        Manage Vocabulary
+                    </h1>
+
+                    <p className="text-slate-500 mt-1">
+                        Create, update, and manage English vocabulary.
+                    </p>
+                </div>
+            </div>
 
             <form
-                onSubmit={handleCreate}
-                className="bg-white p-6 rounded-xl shadow mb-6 grid grid-cols-2 gap-4"
+                onSubmit={handleSubmit}
+                className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6"
             >
-                <input
-                    name="word"
-                    placeholder="Word"
-                    className="border rounded-lg p-3"
-                    value={form.word}
-                    onChange={handleChange}
-                />
+                <h2 className="text-xl font-black text-slate-800 mb-4">
+                    {editingId ? "Edit Vocabulary" : "Add New Vocabulary"}
+                </h2>
 
-                <input
-                    name="meaning"
-                    placeholder="Meaning"
-                    className="border rounded-lg p-3"
-                    value={form.meaning}
-                    onChange={handleChange}
-                />
+                {errorMessage && (
+                    <div className="mb-4 bg-red-50 text-red-500 px-4 py-3 rounded-2xl text-sm font-bold">
+                        {errorMessage}
+                    </div>
+                )}
 
-                <input
-                    name="exampleSentence"
-                    placeholder="Example sentence"
-                    className="border rounded-lg p-3"
-                    value={form.exampleSentence}
-                    onChange={handleChange}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                        name="word"
+                        placeholder="Word"
+                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        value={form.word}
+                        onChange={handleChange}
+                    />
 
-                <select
-                    name="topicId"
-                    className="border rounded-lg p-3"
-                    value={form.topicId}
-                    onChange={handleChange}
-                >
-                    <option value="">Select topic</option>
-                    {topics.map((topic) => (
-                        <option key={topic.id} value={topic.id}>
-                            {topic.name}
-                        </option>
-                    ))}
-                </select>
+                    <input
+                        name="meaning"
+                        placeholder="Meaning"
+                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        value={form.meaning}
+                        onChange={handleChange}
+                    />
 
-                <button className="bg-blue-600 text-white p-3 rounded-lg col-span-2">
-                    Add Vocabulary
-                </button>
+                    <input
+                        name="exampleSentence"
+                        placeholder="Example sentence"
+                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        value={form.exampleSentence}
+                        onChange={handleChange}
+                    />
+
+                    <select
+                        name="topicId"
+                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        value={form.topicId}
+                        onChange={handleChange}
+                    >
+                        <option value="">Select topic</option>
+
+                        {topics.map((topic) => (
+                            <option key={topic.id} value={topic.id}>
+                                {topic.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4 mt-5">
+                    <button
+                        type="submit"
+                        className="bg-[#58CC02] text-white px-7 py-4 rounded-2xl font-black shadow-md hover:scale-[1.02] transition-all"
+                    >
+                        {editingId ? "Update Vocabulary" : "Add Vocabulary"}
+                    </button>
+
+                    {editingId && (
+                        <button
+                            type="button"
+                            onClick={resetForm}
+                            className="bg-slate-100 text-slate-600 px-7 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all"
+                        >
+                            Cancel
+                        </button>
+                    )}
+                </div>
             </form>
 
-            <div className="bg-white rounded-xl shadow overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-slate-100">
-                    <tr>
-                        <th className="text-left p-4">Word</th>
-                        <th className="text-left p-4">Meaning</th>
-                        <th className="text-left p-4">Example</th>
-                        <th className="text-left p-4">Topic</th>
-                        <th className="text-left p-4">Action</th>
-                    </tr>
-                    </thead>
+            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="p-6 border-b border-slate-100">
+                    <h2 className="text-xl font-black text-slate-800">
+                        Vocabulary List
+                    </h2>
+                </div>
 
-                    <tbody>
-                    {vocabularies.map((vocabulary) => (
-                        <tr key={vocabulary.id} className="border-t">
-                            <td className="p-4 font-medium">
-                                {vocabulary.word}
-                            </td>
-                            <td className="p-4">
-                                {vocabulary.meaning}
-                            </td>
-                            <td className="p-4">
-                                {vocabulary.exampleSentence}
-                            </td>
-                            <td className="p-4">
-                                {vocabulary.topicName}
-                            </td>
-                            <td className="p-4">
-                                <button
-                                    onClick={() =>
-                                        handleDelete(vocabulary.id)
-                                    }
-                                    className="text-red-600 hover:underline"
+                {loading ? (
+                    <div className="p-8 text-center text-slate-500 font-bold">
+                        Loading vocabularies...
+                    </div>
+                ) : vocabularies.length === 0 ? (
+                    <div className="p-8 text-center">
+                        <p className="text-slate-500 font-bold">
+                            No vocabularies found.
+                        </p>
+                        <p className="text-slate-400 text-sm mt-1">
+                            Create your first vocabulary word.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[900px]">
+                            <thead className="bg-slate-50">
+                            <tr>
+                                <th className="text-left p-4 text-slate-500 text-sm">
+                                    Word
+                                </th>
+
+                                <th className="text-left p-4 text-slate-500 text-sm">
+                                    Meaning
+                                </th>
+
+                                <th className="text-left p-4 text-slate-500 text-sm">
+                                    Example
+                                </th>
+
+                                <th className="text-left p-4 text-slate-500 text-sm">
+                                    Topic
+                                </th>
+
+                                <th className="text-right p-4 text-slate-500 text-sm">
+                                    Actions
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {vocabularies.map((vocabulary) => (
+                                <tr
+                                    key={vocabulary.id}
+                                    className="border-t border-slate-100"
                                 >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                                    <td className="p-4 font-black text-slate-800">
+                                        {vocabulary.word}
+                                    </td>
+
+                                    <td className="p-4 text-slate-600">
+                                        {vocabulary.meaning}
+                                    </td>
+
+                                    <td className="p-4 text-slate-500">
+                                        {vocabulary.exampleSentence || "-"}
+                                    </td>
+
+                                    <td className="p-4">
+                                            <span className="bg-green-50 text-[#58CC02] px-3 py-1 rounded-full text-sm font-black">
+                                                {vocabulary.topicName || "No topic"}
+                                            </span>
+                                    </td>
+
+                                    <td className="p-4">
+                                        <div className="flex justify-end gap-3">
+                                            <button
+                                                onClick={() =>
+                                                    handleEdit(vocabulary)
+                                                }
+                                                className="px-4 py-2 rounded-xl bg-blue-50 text-blue-500 font-black hover:bg-blue-100 transition-all"
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(
+                                                        vocabulary.id
+                                                    )
+                                                }
+                                                className="px-4 py-2 rounded-xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );
