@@ -5,6 +5,16 @@ export const getVocabularies = async () => {
     return response.data;
 };
 
+export const searchVocabularies = async (keyword) => {
+    const response = await axiosClient.get("/api/vocabularies/search", {
+        params: {
+            keyword,
+        },
+    });
+
+    return response.data;
+};
+
 export const createVocabulary = async (vocabulary) => {
     const response = await axiosClient.post("/api/vocabularies", vocabulary);
     return response.data;

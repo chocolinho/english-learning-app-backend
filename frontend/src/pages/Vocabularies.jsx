@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+
 import { getTopics } from "../services/topicService";
 import {
     createVocabulary,
     deleteVocabulary,
     getVocabularies,
+    searchVocabularies,
     updateVocabulary,
 } from "../services/vocabularyService";
 
@@ -18,6 +20,9 @@ function Vocabularies() {
         topicId: "",
     });
 
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [isSearching, setIsSearching] = useState(false);
+
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -25,6 +30,7 @@ function Vocabularies() {
     const fetchData = async () => {
         try {
             setLoading(true);
+            setErrorMessage("");
 
             const [vocabularyData, topicData] = await Promise.all([
                 getVocabularies(),
@@ -36,6 +42,38 @@ function Vocabularies() {
         } catch (error) {
             console.error(error);
             setErrorMessage("Failed to load vocabulary data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleClearSearch = () => {
+        setSearchKeyword("");
+        setIsSearching(false);
+        fetchData();
+    };
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+
+        const keyword = searchKeyword.trim();
+
+        if (!keyword) {
+            handleClearSearch();
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setErrorMessage("");
+            setIsSearching(true);
+
+            const data = await searchVocabularies(keyword);
+            setVocabularies(data);
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Failed to search vocabularies.");
+            setIsSearching(false);
         } finally {
             setLoading(false);
         }
@@ -98,7 +136,12 @@ function Vocabularies() {
             }
 
             resetForm();
-            fetchData();
+
+            if (isSearching) {
+                handleClearSearch();
+            } else {
+                fetchData();
+            }
         } catch (error) {
             console.error(error);
             setErrorMessage("Failed to save vocabulary.");
@@ -128,7 +171,11 @@ function Vocabularies() {
                 resetForm();
             }
 
-            fetchData();
+            if (isSearching) {
+                handleClearSearch();
+            } else {
+                fetchData();
+            }
         } catch (error) {
             console.error(error);
             setErrorMessage("Failed to delete vocabulary.");
@@ -148,6 +195,47 @@ function Vocabularies() {
                     </p>
                 </div>
             </div>
+
+            <form
+                onSubmit={handleSearch}
+                className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 mb-6"
+            >
+                <div className="flex flex-col md:flex-row gap-4">
+                    <input
+                        type="text"
+                        placeholder="Search vocabulary by word or meaning..."
+                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 flex-1 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                    />
+
+                    <button
+                        type="submit"
+                        className="bg-[#1CB0F6] text-white px-7 py-4 rounded-2xl font-black shadow-md hover:scale-[1.02] transition-all"
+                    >
+                        Search
+                    </button>
+
+                    {isSearching && (
+                        <button
+                            type="button"
+                            onClick={handleClearSearch}
+                            className="bg-slate-100 text-slate-600 px-7 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all"
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
+
+                {isSearching && (
+                    <p className="text-sm text-slate-500 font-bold mt-3">
+                        Showing search results for:{" "}
+                        <span className="text-[#1CB0F6]">
+                            {searchKeyword}
+                        </span>
+                    </p>
+                )}
+            </form>
 
             <form
                 onSubmit={handleSubmit}
@@ -240,6 +328,7 @@ function Vocabularies() {
                         <p className="text-slate-500 font-bold">
                             No vocabularies found.
                         </p>
+
                         <p className="text-slate-400 text-sm mt-1">
                             Create your first vocabulary word.
                         </p>
@@ -291,7 +380,8 @@ function Vocabularies() {
 
                                     <td className="p-4">
                                             <span className="bg-green-50 text-[#58CC02] px-3 py-1 rounded-full text-sm font-black">
-                                                {vocabulary.topicName || "No topic"}
+                                                {vocabulary.topicName ||
+                                                    "No topic"}
                                             </span>
                                     </td>
 
