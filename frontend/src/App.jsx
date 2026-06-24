@@ -10,7 +10,7 @@ import Learn from "./pages/Learn";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
-
+import QuizPractice from "./pages/QuizPractice";
 function App() {
     return (
         <BrowserRouter>
@@ -29,7 +29,7 @@ function App() {
                     <Route path="/learn" element={<Learn />} />
                     <Route path="/topics" element={<Topics />} />
                     <Route path="/vocabularies" element={<Vocabularies />} />
-                    <Route path="/quiz" element={<QuizResults />} />
+                    <Route path="/quiz" element={<QuizPractice />} />
                 </Route>
             </Routes>
         </BrowserRouter>

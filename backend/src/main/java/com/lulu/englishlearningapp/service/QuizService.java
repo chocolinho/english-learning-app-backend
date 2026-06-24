@@ -39,13 +39,12 @@ public class QuizService {
 
         double score = totalQuestions == 0 ? 0 : (correctAnswers * 100.0) / totalQuestions;
 
-        QuizResult quizResult = QuizResult.builder()
-                .totalQuestions(totalQuestions)
-                .correctAnswers(correctAnswers)
-                .score(score)
-                .submittedAt(LocalDateTime.now())
-                .user(user)
-                .build();
+        QuizResult quizResult = new QuizResult();
+        quizResult.setTotalQuestions(totalQuestions);
+        quizResult.setCorrectAnswers(correctAnswers);
+        quizResult.setScore(score);
+        quizResult.setSubmittedAt(LocalDateTime.now());
+        quizResult.setUser(user);
 
         quizResultRepository.save(quizResult);
 
