@@ -25,17 +25,7 @@ public class QuizController {
             @RequestBody QuizSubmitRequest request,
             Authentication authentication
     ) {
-        if (authentication == null) {
-            throw new RuntimeException("Authentication is null");
-        }
-
-        String email = authentication.getName();
-
-        System.out.println("QUIZ AUTH EMAIL = " + email);
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
-
+        User user = getCurrentUser(authentication);
         return quizService.submitQuiz(request, user);
     }
 
@@ -46,15 +36,24 @@ public class QuizController {
 
     @GetMapping("/my-results")
     public List<QuizResult> getMyQuizResults(Authentication authentication) {
-        if (authentication == null) {
+        User user = getCurrentUser(authentication);
+        return quizService.getMyQuizResults(user);
+    }
+
+    private User getCurrentUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
             throw new RuntimeException("Authentication is null");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User user) {
+            return user;
         }
 
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
-
-        return quizService.getMyQuizResults(user);
     }
 }
