@@ -7,6 +7,7 @@ import com.lulu.englishlearningapp.entity.QuizResult;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.entity.Vocabulary;
 import com.lulu.englishlearningapp.repository.QuizResultRepository;
+import com.lulu.englishlearningapp.repository.UserRepository;
 import com.lulu.englishlearningapp.repository.VocabularyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class QuizService {
 
     private final QuizResultRepository quizResultRepository;
     private final VocabularyRepository vocabularyRepository;
+    private final UserRepository userRepository;
 
     public QuizSubmitResponse submitQuiz(
             QuizSubmitRequest request,
@@ -48,16 +50,28 @@ public class QuizService {
 
         quizResultRepository.save(quizResult);
 
+        int earnedXp = correctAnswers * 10;
+
+        if (user.getXp() == null) {
+            user.setXp(0);
+        }
+
+        user.setXp(user.getXp() + earnedXp);
+        User updatedUser = userRepository.save(user);
+
         return QuizSubmitResponse.builder()
                 .totalQuestions(totalQuestions)
                 .correctAnswers(correctAnswers)
                 .score(score)
+                .earnedXp(earnedXp)
+                .totalXp(updatedUser.getXp())
                 .build();
     }
 
     public List<QuizResult> getQuizResults() {
         return quizResultRepository.findAll();
     }
+
     public List<QuizResult> getMyQuizResults(User user) {
         return quizResultRepository.findByUserId(user.getId());
     }

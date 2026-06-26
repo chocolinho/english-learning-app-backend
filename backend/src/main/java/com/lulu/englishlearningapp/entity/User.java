@@ -21,4 +21,7 @@ public class User {
     private String email;
 
     private String password;
+
+    @Builder.Default
+    private Integer xp = 0;
 }

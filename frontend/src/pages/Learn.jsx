@@ -1,6 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, PlayCircle } from "lucide-react";
+import {
+    BookOpen,
+    PlayCircle,
+    PawPrint,
+    Utensils,
+    School,
+    Users,
+    Plane,
+    Dumbbell,
+    Leaf,
+    Palette,
+    Clock,
+} from "lucide-react";
 import { getTopics } from "../services/topicService";
 import { getVocabularies } from "../services/vocabularyService";
 
@@ -32,17 +44,17 @@ function Learn() {
     const getTopicIcon = (name) => {
         const lowerName = name.toLowerCase();
 
-        if (lowerName.includes("animal")) return "🐶";
-        if (lowerName.includes("food")) return "🍕";
-        if (lowerName.includes("school")) return "🏫";
-        if (lowerName.includes("family")) return "👨‍👩‍👧";
-        if (lowerName.includes("travel")) return "✈️";
-        if (lowerName.includes("sport")) return "⚽";
-        if (lowerName.includes("nature")) return "🌿";
-        if (lowerName.includes("color")) return "🎨";
-        if (lowerName.includes("daily")) return "⏰";
+        if (lowerName.includes("animal")) return <PawPrint size={30} />;
+        if (lowerName.includes("food")) return <Utensils size={30} />;
+        if (lowerName.includes("school")) return <School size={30} />;
+        if (lowerName.includes("family")) return <Users size={30} />;
+        if (lowerName.includes("travel")) return <Plane size={30} />;
+        if (lowerName.includes("sport")) return <Dumbbell size={30} />;
+        if (lowerName.includes("nature")) return <Leaf size={30} />;
+        if (lowerName.includes("color")) return <Palette size={30} />;
+        if (lowerName.includes("daily")) return <Clock size={30} />;
 
-        return "📚";
+        return <BookOpen size={30} />;
     };
 
     const getTopicColor = (index) => {
@@ -68,7 +80,10 @@ function Learn() {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="text-center">
-                    <div className="text-6xl mb-4 animate-bounce">📚</div>
+                    <div className="flex justify-center mb-4 animate-bounce">
+                        <BookOpen size={56} className="text-[#58CC02]" />
+                    </div>
+
                     <p className="text-slate-500 font-bold">
                         Loading lessons...
                     </p>
@@ -120,7 +135,7 @@ function Learn() {
                                 className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:-translate-y-1 hover:shadow-lg transition-all"
                             >
                                 <div
-                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 text-3xl ${getTopicColor(
+                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${getTopicColor(
                                         index
                                     )}`}
                                 >

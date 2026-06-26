@@ -9,6 +9,22 @@ import StatCard from "../components/StatCard";
 import LearningCard from "../components/LearningCard";
 import ProgressCard from "../components/ProgressCard";
 import BadgeCard from "../components/BadgeCard";
+import {
+    Star,
+    BookOpen,
+    Brain,
+    FileText,
+    Trophy,
+    Target,
+    Flame,
+    Rocket,
+    PawPrint,
+    Utensils,
+    Plane,
+    School,
+    Users,
+    Dumbbell,
+} from "lucide-react";
 
 function Dashboard() {
     const { user } = useAuth();
@@ -59,20 +75,13 @@ function Dashboard() {
                         )
                         : 0;
 
-                const xpPoints =
-                    vocabularies.length * 10 +
-                    quizResults.reduce(
-                        (sum, item) => sum + Number(item.correctAnswers || 0) * 5,
-                        0
-                    );
-
                 setStats({
                     topics: topics.length,
                     vocabularies: vocabularies.length,
                     quizResults: quizCount,
                     averageScore: averageScore.toFixed(1),
                     bestScore: bestScore.toFixed(1),
-                    xpPoints,
+                    xpPoints: user?.xp || 0,
                 });
             } catch (error) {
                 console.error("Failed to load dashboard data", error);
@@ -82,46 +91,46 @@ function Dashboard() {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [user]);
 
     const recommendedTopics = [
         {
-            icon: "🐶",
+            icon: <PawPrint size={32} />,
             title: "Animals",
             description: "Learn animal vocabulary",
             progress: 70,
             color: "bg-green-100",
         },
         {
-            icon: "🍕",
+            icon: <Utensils size={32} />,
             title: "Food",
             description: "Practice food words",
             progress: 45,
             color: "bg-yellow-100",
         },
         {
-            icon: "✈️",
+            icon: <Plane size={32} />,
             title: "Travel",
             description: "Useful travel English",
             progress: 30,
             color: "bg-blue-100",
         },
         {
-            icon: "🏫",
+            icon: <School size={32} />,
             title: "School",
             description: "Classroom vocabulary",
             progress: 55,
             color: "bg-purple-100",
         },
         {
-            icon: "👨‍👩‍👧",
+            icon: <Users size={32} />,
             title: "Family",
             description: "Family member words",
             progress: 80,
             color: "bg-orange-100",
         },
         {
-            icon: "⚽",
+            icon: <Dumbbell size={32} />,
             title: "Sports",
             description: "Learn sports vocabulary",
             progress: 25,
@@ -133,7 +142,10 @@ function Dashboard() {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="text-center">
-                    <div className="text-6xl mb-4 animate-bounce">🦉</div>
+                    <div className="flex justify-center mb-4 animate-bounce">
+                        <Rocket size={56} className="text-[#58CC02]" />
+                    </div>
+
                     <p className="text-slate-500 font-bold">
                         Loading your learning world...
                     </p>
@@ -147,7 +159,7 @@ function Dashboard() {
             <section className="bg-gradient-to-r from-[#58CC02] to-[#1CB0F6] rounded-[2rem] p-6 md:p-8 text-white shadow-lg overflow-hidden relative">
                 <div className="relative z-10 max-w-2xl">
                     <p className="text-white/80 font-bold mb-2">
-                        Welcome back, {displayName} 👋
+                        Welcome back, {displayName}
                     </p>
 
                     <h1 className="text-3xl md:text-5xl font-black leading-tight">
@@ -166,14 +178,14 @@ function Dashboard() {
                     </a>
                 </div>
 
-                <div className="absolute right-6 bottom-0 text-8xl md:text-9xl opacity-90">
-                    🚀
+                <div className="absolute right-8 bottom-8 opacity-30">
+                    <Rocket size={120} />
                 </div>
             </section>
 
             <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 <StatCard
-                    icon="⭐"
+                    icon={<Star size={28} />}
                     title="XP Points"
                     value={stats.xpPoints}
                     subtitle="total experience"
@@ -181,7 +193,7 @@ function Dashboard() {
                 />
 
                 <StatCard
-                    icon="📚"
+                    icon={<BookOpen size={28} />}
                     title="Topics"
                     value={stats.topics}
                     subtitle="learning topics"
@@ -189,7 +201,7 @@ function Dashboard() {
                 />
 
                 <StatCard
-                    icon="🧠"
+                    icon={<Brain size={28} />}
                     title="Words"
                     value={stats.vocabularies}
                     subtitle="vocabulary learned"
@@ -197,7 +209,7 @@ function Dashboard() {
                 />
 
                 <StatCard
-                    icon="📝"
+                    icon={<FileText size={28} />}
                     title="Quiz Attempts"
                     value={stats.quizResults}
                     subtitle="completed quizzes"
@@ -293,21 +305,21 @@ function Dashboard() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <BadgeCard
-                        icon="🔥"
+                        icon={<Flame size={30} />}
                         title="Streak Starter"
                         description="Complete your first weekly learning goal"
                         color="bg-orange-100"
                     />
 
                     <BadgeCard
-                        icon="📚"
+                        icon={<BookOpen size={30} />}
                         title="Word Collector"
                         description="Build your vocabulary collection"
                         color="bg-blue-100"
                     />
 
                     <BadgeCard
-                        icon="🎯"
+                        icon={<Target size={30} />}
                         title="Quiz Beginner"
                         description="Complete your first quiz"
                         color="bg-green-100"

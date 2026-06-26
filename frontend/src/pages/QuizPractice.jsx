@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getVocabularies } from "../services/vocabularyService";
 import { submitQuizResult } from "../services/quizService";
+import { RotateCcw, Trophy, CheckCircle2, XCircle, Star } from "lucide-react";
 
 function QuizPractice() {
     const [questions, setQuestions] = useState([]);
@@ -76,20 +77,14 @@ function QuizPractice() {
                     return;
                 }
 
-                const selectedVocabularies = shuffleArray(cleanVocabularies)
-                    .slice(0, 5);
+                const selectedVocabularies = shuffleArray(cleanVocabularies).slice(0, 5);
 
-                const generatedQuestions = selectedVocabularies.map(
-                    (vocabulary) => ({
-                        id: vocabulary.id,
-                        word: vocabulary.word,
-                        correctAnswer: vocabulary.meaning,
-                        options: generateOptions(
-                            vocabulary,
-                            cleanVocabularies
-                        ),
-                    })
-                );
+                const generatedQuestions = selectedVocabularies.map((vocabulary) => ({
+                    id: vocabulary.id,
+                    word: vocabulary.word,
+                    correctAnswer: vocabulary.meaning,
+                    options: generateOptions(vocabulary, cleanVocabularies),
+                }));
 
                 setQuestions(generatedQuestions);
             } catch (error) {
@@ -123,12 +118,14 @@ function QuizPractice() {
             setSubmitting(true);
             setErrorMessage("");
 
-            await submitQuizResult(quizResult);
+            const response = await submitQuizResult(quizResult);
 
             setResult({
-                totalQuestions,
-                correctAnswers,
-                score,
+                totalQuestions: response.totalQuestions,
+                correctAnswers: response.correctAnswers,
+                score: response.score,
+                earnedXp: response.earnedXp,
+                totalXp: response.totalXp,
             });
         } catch (error) {
             console.error("Submit quiz failed:", error);
@@ -139,6 +136,8 @@ function QuizPractice() {
                 totalQuestions,
                 correctAnswers,
                 score,
+                earnedXp: 0,
+                totalXp: 0,
             });
 
             setErrorMessage(
@@ -148,6 +147,7 @@ function QuizPractice() {
             setSubmitting(false);
         }
     };
+
     const handleChooseAnswer = (option) => {
         if (selectedOptionId || submitting || result) return;
 
@@ -184,8 +184,15 @@ function QuizPractice() {
 
     if (loading) {
         return (
-            <div className="text-center font-bold text-slate-500">
-                Loading quiz...
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center">
+                    <div className="flex justify-center mb-4 animate-bounce">
+                        <Trophy size={56} className="text-[#58CC02]" />
+                    </div>
+                    <p className="text-slate-500 font-bold">
+                        Loading quiz...
+                    </p>
+                </div>
             </div>
         );
     }
@@ -208,17 +215,31 @@ function QuizPractice() {
                 )}
 
                 <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
+                    <div className="w-20 h-20 bg-green-100 rounded-3xl flex items-center justify-center mx-auto mb-5">
+                        <Trophy size={42} className="text-[#58CC02]" />
+                    </div>
+
                     <h1 className="text-4xl font-black text-slate-800">
                         Quiz Completed!
                     </h1>
 
                     <p className="text-7xl font-black text-[#58CC02] mt-6">
-                        {result.score}%
+                        {Math.round(result.score)}%
+                    </p>
+
+                    <div className="flex justify-center items-center gap-2 mt-4">
+                        <Star size={24} className="text-yellow-500" />
+                        <p className="text-xl font-black text-yellow-500">
+                            +{result.earnedXp || 0} XP
+                        </p>
+                    </div>
+
+                    <p className="text-slate-500 font-bold mt-1">
+                        Total XP: {result.totalXp || 0}
                     </p>
 
                     <p className="text-slate-500 font-bold mt-3">
-                        Correct: {result.correctAnswers} /{" "}
-                        {result.totalQuestions}
+                        Correct: {result.correctAnswers} / {result.totalQuestions}
                     </p>
 
                     <div className="mt-8 space-y-3 text-left">
@@ -231,11 +252,25 @@ function QuizPractice() {
                                         : "bg-red-50 border-red-100"
                                 }`}
                             >
-                                <p className="font-black text-slate-800">
-                                    {index + 1}. {answer.word}
-                                </p>
+                                <div className="flex items-center gap-2">
+                                    {answer.isCorrect ? (
+                                        <CheckCircle2
+                                            size={20}
+                                            className="text-[#58CC02]"
+                                        />
+                                    ) : (
+                                        <XCircle
+                                            size={20}
+                                            className="text-red-500"
+                                        />
+                                    )}
 
-                                <p className="text-sm text-slate-500 mt-1">
+                                    <p className="font-black text-slate-800">
+                                        {index + 1}. {answer.word}
+                                    </p>
+                                </div>
+
+                                <p className="text-sm text-slate-500 mt-2">
                                     Your answer:{" "}
                                     <span
                                         className={
@@ -263,8 +298,9 @@ function QuizPractice() {
                     <button
                         type="button"
                         onClick={handleRestart}
-                        className="mt-8 bg-[#1CB0F6] text-white px-8 py-4 rounded-2xl font-black shadow-md"
+                        className="mt-8 bg-[#1CB0F6] text-white px-8 py-4 rounded-2xl font-black shadow-md inline-flex items-center gap-2"
                     >
+                        <RotateCcw size={20} />
                         Try Again
                     </button>
                 </div>
@@ -310,23 +346,16 @@ function QuizPractice() {
 
                 <div className="grid gap-4">
                     {currentQuestion.options.map((option) => {
-                        const isSelected =
-                            selectedOptionId === option.id;
-
-                        const isCorrect =
-                            isSelected && option.isCorrect;
-
-                        const isWrong =
-                            isSelected && !option.isCorrect;
+                        const isSelected = selectedOptionId === option.id;
+                        const isCorrect = isSelected && option.isCorrect;
+                        const isWrong = isSelected && !option.isCorrect;
 
                         return (
                             <button
                                 key={option.id}
                                 type="button"
                                 onClick={() => handleChooseAnswer(option)}
-                                disabled={
-                                    selectedOptionId !== null || submitting
-                                }
+                                disabled={selectedOptionId !== null || submitting}
                                 className={`p-5 rounded-2xl border-2 text-left font-black transition-all ${
                                     isCorrect
                                         ? "border-[#58CC02] bg-green-50 text-[#58CC02]"

@@ -26,4 +26,13 @@ public class UserService {
 
         return "Password changed successfully";
     }
+
+    public User addXp(User user, int xpAmount) {
+        if (user.getXp() == null) {
+            user.setXp(0);
+        }
+
+        user.setXp(user.getXp() + xpAmount);
+        return userRepository.save(user);
+    }
 }
