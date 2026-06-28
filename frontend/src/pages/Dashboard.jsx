@@ -10,7 +10,6 @@ import {
     LineChart,
     Medal,
     PlayCircle,
-    Rocket,
     Sparkles,
     Star,
     Target,
@@ -19,18 +18,19 @@ import {
 import {
     getMyQuizResults,
     getTopics,
-    getVocabularies,
 } from "../services/dashboardService";
+import { getMyAchievements } from "../services/achievementService";
 import { useAuth } from "../context/AuthContext";
 import StatCard from "../components/StatCard";
 import ProgressCard from "../components/ProgressCard";
 import BadgeCard from "../components/BadgeCard";
+import PageSkeleton from "../components/PageSkeleton";
 
 function Dashboard() {
     const { user, fetchCurrentUser } = useAuth();
     const [topics, setTopics] = useState([]);
-    const [vocabularies, setVocabularies] = useState([]);
     const [quizResults, setQuizResults] = useState([]);
+    const [achievements, setAchievements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -40,17 +40,17 @@ function Dashboard() {
                 setLoading(true);
                 setErrorMessage("");
 
-                const [topicData, vocabularyData, resultData] =
+                const [topicData, resultData, achievementData] =
                     await Promise.all([
                         getTopics(),
-                        getVocabularies(),
                         getMyQuizResults(),
+                        getMyAchievements(),
                         fetchCurrentUser(),
                     ]);
 
                 setTopics(topicData);
-                setVocabularies(vocabularyData);
                 setQuizResults(resultData);
+                setAchievements(achievementData);
             } catch (error) {
                 console.error("Failed to load dashboard data", error);
                 setErrorMessage("Could not load your dashboard right now.");
@@ -73,7 +73,10 @@ function Dashboard() {
 
         return {
             topics: topics.length,
-            vocabularies: vocabularies.length,
+            vocabularies: topics.reduce(
+                (sum, topic) => sum + Number(topic.vocabularyCount || 0),
+                0
+            ),
             quizResults: quizCount,
             averageScore: averageScore.toFixed(1),
             bestScore: bestScore.toFixed(1),
@@ -82,8 +85,9 @@ function Dashboard() {
             currentLevelXp: user?.currentLevelXp ?? 0,
             nextLevelXp: user?.nextLevelXp ?? 100,
             levelProgress: Math.min(user?.levelProgress ?? 0, 100),
+            dailyStreak: user?.dailyStreak ?? 0,
         };
-    }, [quizResults, topics.length, user, vocabularies.length]);
+    }, [quizResults, topics, user]);
 
     const displayName = user?.username || user?.email || "Learner";
 
@@ -91,27 +95,17 @@ function Dashboard() {
         () =>
             topics.slice(0, 6).map((topic) => ({
                 ...topic,
-                vocabularyCount: vocabularies.filter(
-                    (vocabulary) =>
-                        Number(vocabulary.topicId) === Number(topic.id)
-                ).length,
+                vocabularyCount: topic.vocabularyCount ?? 0,
             })),
-        [topics, vocabularies]
+        [topics]
+    );
+
+    const unlockedAchievements = achievements.filter(
+        (achievement) => achievement.unlocked
     );
 
     if (loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="text-center">
-                    <div className="mb-4 flex justify-center animate-bounce">
-                        <Rocket size={56} className="text-[#58CC02]" />
-                    </div>
-                    <p className="font-black text-slate-500">
-                        Loading your learning world...
-                    </p>
-                </div>
-            </div>
-        );
+        return <PageSkeleton variant="dashboard" />;
     }
 
     return (
@@ -142,14 +136,14 @@ function Dashboard() {
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             <Link
                                 to="/learn"
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-[#58CC02] shadow-lg transition-all hover:-translate-y-1"
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-[#58CC02] shadow-lg transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-white/40"
                             >
                                 <GraduationCap className="h-5 w-5" />
                                 Start Lesson
                             </Link>
                             <Link
                                 to="/quiz"
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900/15 px-6 py-4 font-black text-white ring-1 ring-white/30 transition-all hover:-translate-y-1 hover:bg-slate-900/25"
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900/15 px-6 py-4 font-black text-white ring-1 ring-white/30 transition-all hover:-translate-y-1 hover:bg-slate-900/25 focus:outline-none focus:ring-4 focus:ring-white/30"
                             >
                                 <PlayCircle className="h-5 w-5" />
                                 Practice Quiz
@@ -195,11 +189,11 @@ function Dashboard() {
                     color="bg-yellow-100 text-yellow-500"
                 />
                 <StatCard
-                    icon={<BookOpen size={28} />}
-                    title="Topics"
-                    value={stats.topics}
-                    subtitle="available lessons"
-                    color="bg-green-100 text-[#58CC02]"
+                    icon={<Flame size={28} />}
+                    title="Daily Streak"
+                    value={stats.dailyStreak}
+                    subtitle="learning days"
+                    color="bg-orange-100 text-orange-500"
                 />
                 <StatCard
                     icon={<Brain size={28} />}
@@ -288,7 +282,8 @@ function Dashboard() {
                             <Link
                                 key={topic.id}
                                 to={hasWords ? `/learn/${topic.id}` : "/learn"}
-                                className={`group rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all ${
+                                aria-disabled={!hasWords}
+                                className={`group rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all focus:outline-none focus:ring-4 focus:ring-green-100 ${
                                     hasWords
                                         ? "hover:-translate-y-1 hover:shadow-xl"
                                         : "cursor-not-allowed opacity-70"
@@ -334,24 +329,28 @@ function Dashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <BadgeCard
-                        icon={<Flame size={30} />}
-                        title="Warm Start"
-                        description="Complete your first quiz session"
-                        color="bg-orange-100 text-orange-500"
-                    />
-                    <BadgeCard
-                        icon={<CheckCircle2 size={30} />}
-                        title="Word Builder"
-                        description="Explore lessons from real topics"
-                        color="bg-blue-100 text-[#1CB0F6]"
-                    />
-                    <BadgeCard
-                        icon={<Medal size={30} />}
-                        title="Score Climber"
-                        description="Improve your best quiz score"
-                        color="bg-yellow-100 text-yellow-500"
-                    />
+                    {(unlockedAchievements.length > 0
+                        ? unlockedAchievements.slice(0, 3)
+                        : achievements.slice(0, 3)
+                    ).map((achievement) => (
+                        <BadgeCard
+                            key={achievement.code}
+                            icon={
+                                achievement.unlocked ? (
+                                    <CheckCircle2 size={30} />
+                                ) : (
+                                    <Medal size={30} />
+                                )
+                            }
+                            title={achievement.title}
+                            description={achievement.description}
+                            color={
+                                achievement.unlocked
+                                    ? "bg-green-100 text-[#58CC02]"
+                                    : "bg-slate-100 text-slate-400"
+                            }
+                        />
+                    ))}
                 </div>
             </section>
         </div>

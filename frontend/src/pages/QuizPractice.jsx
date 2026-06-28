@@ -10,8 +10,10 @@ import {
     XCircle,
 } from "lucide-react";
 import { getVocabularies } from "../services/vocabularyService";
-import { submitQuizResult } from "../services/quizService";
+import { getTopics } from "../services/topicService";
+import { getQuizQuestionsByTopic, submitQuizResult } from "../services/quizService";
 import { useAuth } from "../context/AuthContext";
+import PageSkeleton from "../components/PageSkeleton";
 
 function QuizPractice() {
     const { fetchCurrentUser } = useAuth();
@@ -20,6 +22,8 @@ function QuizPractice() {
     const [selectedOption, setSelectedOption] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [result, setResult] = useState(null);
+    const [topics, setTopics] = useState([]);
+    const [selectedTopicId, setSelectedTopicId] = useState("");
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -77,7 +81,15 @@ function QuizPractice() {
             setSelectedOption(null);
             setCurrentIndex(0);
 
-            const vocabularies = await getVocabularies();
+            const [topicData, vocabularyData] = await Promise.all([
+                getTopics(),
+                selectedTopicId
+                    ? getQuizQuestionsByTopic(selectedTopicId)
+                    : getVocabularies(),
+            ]);
+
+            setTopics(topicData);
+            const vocabularies = vocabularyData;
             const cleanVocabularies =
                 getUniqueVocabulariesByMeaning(vocabularies);
 
@@ -141,6 +153,7 @@ function QuizPractice() {
             setErrorMessage("");
 
             const response = await submitQuizResult({
+                topicId: selectedTopicId ? Number(selectedTopicId) : null,
                 answers: finalAnswers.map((answer) => ({
                     vocabularyId: answer.questionId,
                     answer: answer.selectedAnswer,
@@ -199,30 +212,60 @@ function QuizPractice() {
     };
 
     if (loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="text-center">
-                    <div className="mb-4 flex justify-center animate-bounce">
-                        <Trophy size={56} className="text-[#58CC02]" />
-                    </div>
-                    <p className="font-black text-slate-500">
-                        Building your quiz...
-                    </p>
-                </div>
-            </div>
-        );
+        return <PageSkeleton />;
     }
 
-    if (errorMessage && questions.length === 0) {
+    const renderTopicSelector = () => (
+        <div className="mb-5 rounded-[1.75rem] border border-slate-100 bg-white p-4 shadow-sm">
+            <label
+                htmlFor="quiz-topic"
+                className="mb-2 block text-sm font-black text-slate-500"
+            >
+                Quiz Topic
+            </label>
+            <div className="flex flex-col gap-3 sm:flex-row">
+                <select
+                    id="quiz-topic"
+                    value={selectedTopicId}
+                    onChange={(event) => setSelectedTopicId(event.target.value)}
+                    className="min-h-12 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                >
+                    <option value="">All topics</option>
+                    {topics.map((topic) => (
+                        <option
+                            key={topic.id}
+                            value={topic.id}
+                            disabled={(topic.vocabularyCount ?? 0) < 4}
+                        >
+                            {topic.name} ({topic.vocabularyCount ?? 0} words)
+                        </option>
+                    ))}
+                </select>
+                <button
+                    type="button"
+                    onClick={loadQuestions}
+                    className="rounded-2xl bg-[#1CB0F6] px-5 py-3 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                >
+                    Load Quiz
+                </button>
+            </div>
+        </div>
+    );
+
+    if (!currentQuestion) {
         return (
-            <div className="mx-auto max-w-2xl rounded-[2rem] border border-yellow-100 bg-yellow-50 p-8 text-center">
-                <Target className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
-                <h1 className="text-2xl font-black text-slate-900">
-                    Quiz is not ready yet
-                </h1>
-                <p className="mt-3 font-semibold text-slate-500">
-                    {errorMessage}
-                </p>
+            <div className="mx-auto max-w-3xl">
+                {renderTopicSelector()}
+                <div className="rounded-[2rem] border border-yellow-100 bg-yellow-50 p-8 text-center">
+                    <Target className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
+                    <h1 className="text-2xl font-black text-slate-900">
+                        Quiz is not ready yet
+                    </h1>
+                    <p className="mt-3 font-semibold text-slate-500">
+                        {errorMessage ||
+                            "Choose a topic with at least 4 words to start."}
+                    </p>
+                </div>
             </div>
         );
     }
@@ -358,7 +401,7 @@ function QuizPractice() {
                         <button
                             type="button"
                             onClick={loadQuestions}
-                            className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-8 py-4 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 sm:w-auto"
+                            className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-8 py-4 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-100 sm:w-auto"
                         >
                             <RotateCcw size={20} />
                             Try Again
@@ -373,6 +416,8 @@ function QuizPractice() {
 
     return (
         <div className="mx-auto max-w-3xl">
+            {renderTopicSelector()}
+
             <div className="mb-6">
                 <div className="mb-3 flex items-center justify-between">
                     <p className="font-black text-slate-500">
@@ -381,7 +426,14 @@ function QuizPractice() {
                     <p className="font-black text-[#58CC02]">{progress}%</p>
                 </div>
 
-                <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+                <div
+                    className="h-4 overflow-hidden rounded-full bg-slate-100"
+                    role="progressbar"
+                    aria-label="Quiz progress"
+                    aria-valuenow={progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                >
                     <div
                         className="h-full rounded-full bg-[#58CC02] transition-all duration-700"
                         style={{ width: `${progress}%` }}
@@ -416,7 +468,8 @@ function QuizPractice() {
                                 type="button"
                                 onClick={() => handleChooseAnswer(option)}
                                 disabled={isAnswered || submitting}
-                                className={`flex items-center justify-between gap-3 rounded-3xl border-2 p-5 text-left font-black transition-all ${
+                                aria-pressed={isSelected}
+                                className={`flex items-center justify-between gap-3 rounded-3xl border-2 p-5 text-left font-black transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 ${
                                     showCorrect
                                         ? "border-[#58CC02] bg-green-50 text-[#58CC02]"
                                         : showWrong
@@ -438,6 +491,8 @@ function QuizPractice() {
 
                 {isAnswered && (
                     <div
+                        role="status"
+                        aria-live="polite"
                         className={`mt-5 rounded-3xl p-4 font-bold ${
                             selectedOption.isCorrect
                                 ? "bg-green-50 text-[#58CC02]"
@@ -454,7 +509,7 @@ function QuizPractice() {
                     type="button"
                     onClick={handleContinue}
                     disabled={!isAnswered || submitting}
-                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-8 py-4 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-8 py-4 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {submitting
                         ? "Saving result..."

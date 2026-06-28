@@ -87,10 +87,12 @@ function Learn() {
             .map((topic, index) => ({
                 ...topic,
                 color: getTopicColor(index),
-                vocabularyCount: vocabularies.filter(
-                    (vocabulary) =>
-                        Number(vocabulary.topicId) === Number(topic.id)
-                ).length,
+                vocabularyCount:
+                    topic.vocabularyCount ??
+                    vocabularies.filter(
+                        (vocabulary) =>
+                            Number(vocabulary.topicId) === Number(topic.id)
+                    ).length,
             }))
             .filter((topic) => {
                 if (!normalizedSearch) return true;

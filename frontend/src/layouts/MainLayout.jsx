@@ -2,7 +2,9 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     BookOpen,
     Brain,
+    Flame,
     GraduationCap,
+    Heart,
     Home,
     LogOut,
     Sparkles,
@@ -32,12 +34,19 @@ function MainLayout() {
         { to: "/learn", label: "Learn", icon: GraduationCap },
         { to: "/quiz", label: "Quiz", icon: Target },
         { to: "/quiz-results", label: "Results", icon: Trophy },
+    ];
+
+    const secondaryNavItems = [
+        { to: "/achievements", label: "Badges", icon: Flame },
+        { to: "/review", label: "Review", icon: Sparkles },
+        { to: "/favorites", label: "Favorites", icon: Heart },
+        { to: "/profile", label: "Profile", icon: UserRound },
         { to: "/topics", label: "Topics", icon: BookOpen },
         { to: "/vocabularies", label: "Words", icon: Brain },
     ];
 
     const navLinkClass = ({ isActive }) =>
-        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all ${
+        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all focus:outline-none focus:ring-4 focus:ring-green-100 ${
             isActive
                 ? "bg-[#58CC02] text-white shadow-lg shadow-green-100"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -45,7 +54,7 @@ function MainLayout() {
 
     return (
         <div className="min-h-screen bg-[#F6F8FB] text-slate-800">
-            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col border-r border-slate-100 bg-white p-6 lg:flex">
+            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col overflow-y-auto border-r border-slate-100 bg-white p-6 lg:flex">
                 <div className="mb-8 flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#58CC02] shadow-lg shadow-green-100">
                         <BookOpen className="h-7 w-7 text-white" />
@@ -72,7 +81,7 @@ function MainLayout() {
                                 {loadingUser ? "Loading..." : displayName}
                             </p>
                             <p className="text-xs font-bold text-slate-400">
-                                Level {level} · {totalXp} XP
+                                Level {level} - {totalXp} XP
                             </p>
                         </div>
                     </div>
@@ -89,7 +98,7 @@ function MainLayout() {
                     </p>
                 </div>
 
-                <nav className="flex-1 space-y-2">
+                <nav className="flex-1 space-y-2" aria-label="Main navigation">
                     {navItems.map((item) => {
                         const Icon = item.icon;
 
@@ -104,6 +113,28 @@ function MainLayout() {
                             </NavLink>
                         );
                     })}
+
+                    <div className="pt-4">
+                        <p className="px-4 pb-2 text-xs font-black uppercase text-slate-400">
+                            More
+                        </p>
+                        <div className="space-y-2">
+                            {secondaryNavItems.map((item) => {
+                                const Icon = item.icon;
+
+                                return (
+                                    <NavLink
+                                        key={item.to}
+                                        to={item.to}
+                                        className={navLinkClass}
+                                    >
+                                        <Icon className="h-5 w-5" />
+                                        {item.label}
+                                    </NavLink>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </nav>
 
                 <button
@@ -128,7 +159,7 @@ function MainLayout() {
                                 LinguaKid
                             </h1>
                             <p className="truncate text-xs font-bold text-slate-400">
-                                {displayName} · Level {level}
+                                {displayName} - Level {level}
                             </p>
                         </div>
                     </div>
@@ -155,14 +186,43 @@ function MainLayout() {
                         {totalXp} XP
                     </span>
                 </div>
+
+                <nav
+                    className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1"
+                    aria-label="Secondary mobile navigation"
+                >
+                    {secondaryNavItems.map((item) => {
+                        const Icon = item.icon;
+
+                        return (
+                            <NavLink
+                                key={item.to}
+                                to={item.to}
+                                className={({ isActive }) =>
+                                    `inline-flex shrink-0 items-center gap-2 rounded-2xl px-3 py-2 text-xs font-black transition-all ${
+                                        isActive
+                                            ? "bg-green-50 text-[#58CC02]"
+                                            : "bg-slate-50 text-slate-500"
+                                    } focus:outline-none focus:ring-4 focus:ring-green-100`
+                                }
+                            >
+                                <Icon className="h-4 w-4" />
+                                {item.label}
+                            </NavLink>
+                        );
+                    })}
+                </nav>
             </header>
 
             <main className="px-4 py-5 pb-24 md:px-8 md:py-8 lg:ml-72 lg:pb-8">
                 <Outlet />
             </main>
 
-            <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 gap-1 border-t border-slate-100 bg-white/95 px-2 py-2 backdrop-blur lg:hidden">
-                {navItems.slice(0, 4).map((item) => {
+            <nav
+                className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 gap-1 border-t border-slate-100 bg-white/95 px-2 py-2 backdrop-blur lg:hidden"
+                aria-label="Primary mobile navigation"
+            >
+                {navItems.map((item) => {
                     const Icon = item.icon;
 
                     return (
@@ -174,7 +234,7 @@ function MainLayout() {
                                     isActive
                                         ? "bg-green-50 text-[#58CC02]"
                                         : "text-slate-400"
-                                }`
+                                } focus:outline-none focus:ring-4 focus:ring-green-100`
                             }
                         >
                             <Icon className="h-5 w-5" />
@@ -188,3 +248,4 @@ function MainLayout() {
 }
 
 export default MainLayout;
+

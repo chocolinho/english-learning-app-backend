@@ -14,3 +14,8 @@ export const getMyQuizResults = async () => {
     const response = await axiosClient.get("/api/quizzes/my-results");
     return response.data;
 };
+
+export const getQuizQuestionsByTopic = async (topicId) => {
+    const response = await axiosClient.get(`/api/quizzes/topic/${topicId}/questions`);
+    return response.data;
+};

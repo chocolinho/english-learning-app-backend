@@ -7,11 +7,13 @@ import {
     ChevronLeft,
     ChevronRight,
     GraduationCap,
+    Heart,
     RotateCcw,
     Sparkles,
     Volume2,
 } from "lucide-react";
 import { getVocabulariesByTopic } from "../services/vocabularyService";
+import { addFavoriteVocabulary } from "../services/favoriteService";
 
 function LearnTopic() {
     const { topicId } = useParams();
@@ -21,6 +23,7 @@ function LearnTopic() {
     const [loading, setLoading] = useState(true);
     const [completed, setCompleted] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [favoriteMessage, setFavoriteMessage] = useState("");
 
     useEffect(() => {
         const fetchVocabularies = async () => {
@@ -85,6 +88,19 @@ function LearnTopic() {
         utterance.lang = "en-US";
         utterance.rate = 0.9;
         window.speechSynthesis.speak(utterance);
+    };
+
+    const handleAddFavorite = async () => {
+        if (!currentVocabulary?.id) return;
+
+        try {
+            await addFavoriteVocabulary(currentVocabulary.id);
+            setFavoriteMessage("Saved to favorites.");
+            setTimeout(() => setFavoriteMessage(""), 1800);
+        } catch (error) {
+            console.error(error);
+            setFavoriteMessage("Could not save favorite.");
+        }
     };
 
     if (loading) {
@@ -255,6 +271,24 @@ function LearnTopic() {
                             <Volume2 className="h-5 w-5" />
                             Pronounce
                         </button>
+
+                        <button
+                            type="button"
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                handleAddFavorite();
+                            }}
+                            className="mt-3 inline-flex items-center gap-2 rounded-2xl bg-pink-50 px-5 py-3 font-black text-pink-500 transition-all hover:-translate-y-1"
+                        >
+                            <Heart className="h-5 w-5" />
+                            Favorite
+                        </button>
+
+                        {favoriteMessage && (
+                            <p className="mt-3 text-sm font-black text-slate-400">
+                                {favoriteMessage}
+                            </p>
+                        )}
                     </div>
 
                     <div
