@@ -20,10 +20,12 @@ public class FavoriteVocabularyService {
 
     private final FavoriteVocabularyRepository favoriteVocabularyRepository;
     private final VocabularyRepository vocabularyRepository;
+    private final SubscriptionService subscriptionService;
 
     public List<FavoriteVocabularyResponse> getMyFavorites(User user) {
         return favoriteVocabularyRepository.findByUserOrderByCreatedAtDesc(user)
                 .stream()
+                .filter(favorite -> subscriptionService.canAccessTopic(user, favorite.getVocabulary().getTopic()))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -31,6 +33,7 @@ public class FavoriteVocabularyService {
     public FavoriteVocabularyResponse addFavorite(User user, Long vocabularyId) {
         Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
                 .orElseThrow(() -> new RuntimeException("Vocabulary not found"));
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
 
         return favoriteVocabularyRepository.findByUserAndVocabulary(user, vocabulary)
                 .map(this::mapToResponse)
@@ -47,6 +50,7 @@ public class FavoriteVocabularyService {
     public void removeFavorite(User user, Long vocabularyId) {
         Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
                 .orElseThrow(() -> new RuntimeException("Vocabulary not found"));
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
 
         favoriteVocabularyRepository.deleteByUserAndVocabulary(user, vocabulary);
     }

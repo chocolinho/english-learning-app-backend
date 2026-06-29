@@ -28,6 +28,7 @@ public class QuizService {
     private final WrongAnswerService wrongAnswerService;
     private final AchievementService achievementService;
     private final VocabularyProgressService vocabularyProgressService;
+    private final SubscriptionService subscriptionService;
 
     public QuizSubmitResponse submitQuiz(
             QuizSubmitRequest request,
@@ -37,12 +38,20 @@ public class QuizService {
                 ? Collections.emptyList()
                 : request.getAnswers();
         int totalQuestions = answers.size();
+        subscriptionService.enforceQuizQuestionLimit(user, totalQuestions);
+
         int correctAnswers = 0;
         Topic topic = request.getTopicId() == null ? null : topicService.findTopicById(request.getTopicId());
+
+        if (topic != null) {
+            subscriptionService.enforceTopicAccess(user, topic);
+        }
 
         for (QuizAnswerRequest answerRequest : answers) {
             Vocabulary vocabulary = vocabularyRepository.findById(answerRequest.getVocabularyId())
                     .orElseThrow(() -> new RuntimeException("Vocabulary not found"));
+
+            subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
 
             if (topic != null && !vocabulary.getTopic().getId().equals(topic.getId())) {
                 throw new RuntimeException("Vocabulary does not belong to selected topic");

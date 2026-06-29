@@ -1,6 +1,8 @@
 package com.lulu.englishlearningapp.service;
 
 import com.lulu.englishlearningapp.dto.AdminStatsResponse;
+import com.lulu.englishlearningapp.entity.SubscriptionType;
+import com.lulu.englishlearningapp.entity.TopicAccessType;
 import com.lulu.englishlearningapp.repository.QuizResultRepository;
 import com.lulu.englishlearningapp.repository.TopicRepository;
 import com.lulu.englishlearningapp.repository.UserRepository;
@@ -18,9 +20,18 @@ public class AdminService {
     private final QuizResultRepository quizResultRepository;
 
     public AdminStatsResponse getStats() {
+        long totalUsers = userRepository.count();
+        long premiumUsers = userRepository.countBySubscriptionType(SubscriptionType.PREMIUM);
+        long totalTopics = topicRepository.count();
+        long premiumTopics = topicRepository.countByAccessType(TopicAccessType.PREMIUM);
+
         return AdminStatsResponse.builder()
-                .totalUsers(userRepository.count())
-                .totalTopics(topicRepository.count())
+                .totalUsers(totalUsers)
+                .freeUsers(totalUsers - premiumUsers)
+                .premiumUsers(premiumUsers)
+                .totalTopics(totalTopics)
+                .freeTopics(totalTopics - premiumTopics)
+                .premiumTopics(premiumTopics)
                 .totalVocabularies(vocabularyRepository.count())
                 .totalQuizAttempts(quizResultRepository.count())
                 .build();

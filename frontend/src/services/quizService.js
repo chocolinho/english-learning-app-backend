@@ -15,7 +15,9 @@ export const getMyQuizResults = async () => {
     return response.data;
 };
 
-export const getQuizQuestionsByTopic = async (topicId) => {
-    const response = await axiosClient.get(`/api/quizzes/topic/${topicId}/questions`);
+export const getQuizQuestionsByTopic = async (topicId, limit) => {
+    const response = await axiosClient.get(`/api/quizzes/topic/${topicId}/questions`, {
+        params: limit ? { limit } : {},
+    });
     return response.data;
 };

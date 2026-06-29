@@ -5,8 +5,10 @@ import {
     BookOpen,
     Brain,
     Clock,
+    Crown,
     Dumbbell,
     Leaf,
+    Lock,
     Palette,
     PawPrint,
     Plane,
@@ -19,13 +21,17 @@ import {
 } from "lucide-react";
 import { getTopics } from "../services/topicService";
 import { getVocabularies } from "../services/vocabularyService";
+import { useAuth } from "../context/AuthContext";
+import PremiumLockedModal from "../components/PremiumLockedModal";
 
 function Learn() {
+    const { isPremium } = useAuth();
     const [topics, setTopics] = useState([]);
     const [vocabularies, setVocabularies] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const [premiumModalOpen, setPremiumModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchLearnData = async () => {
@@ -127,6 +133,13 @@ function Learn() {
 
     return (
         <div className="mx-auto max-w-7xl space-y-6">
+            <PremiumLockedModal
+                open={premiumModalOpen}
+                title="Premium topic locked"
+                description="Upgrade to Premium to learn premium topics, access advanced practice, and unlock smarter review features."
+                onClose={() => setPremiumModalOpen(false)}
+            />
+
             {errorMessage && (
                 <div className="rounded-3xl bg-red-50 p-4 font-bold text-red-500">
                     {errorMessage}
@@ -138,7 +151,7 @@ function Learn() {
                     <div>
                         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
                             <Sparkles className="h-4 w-4" />
-                            Flashcard learning
+                            {isPremium ? "Premium library" : "Flashcard learning"}
                         </div>
                         <h1 className="text-3xl font-black md:text-5xl">
                             Pick a topic and flip through words.
@@ -214,6 +227,9 @@ function Learn() {
                     {topicCards.map((topic) => {
                         const Icon = getTopicIcon(topic.name);
                         const hasWords = topic.vocabularyCount > 0;
+                        const isPremiumTopic = topic.accessType === "PREMIUM";
+                        const isLocked = Boolean(topic.locked);
+                        const canStart = hasWords && !isLocked;
 
                         return (
                             <article
@@ -231,15 +247,29 @@ function Learn() {
                                         <Icon className="h-8 w-8" />
                                     </div>
 
-                                    <span
-                                        className={`rounded-full px-3 py-1 text-xs font-black ${
-                                            hasWords
-                                                ? "bg-green-50 text-[#58CC02]"
-                                                : "bg-slate-100 text-slate-400"
-                                        }`}
-                                    >
-                                        {hasWords ? "Ready" : "Locked"}
-                                    </span>
+                                    <div className="flex flex-col items-end gap-2">
+                                        <span
+                                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-black ${
+                                                isPremiumTopic
+                                                    ? "bg-yellow-100 text-yellow-600"
+                                                    : "bg-green-50 text-[#58CC02]"
+                                            }`}
+                                        >
+                                            {isPremiumTopic && (
+                                                <Crown className="h-3.5 w-3.5" />
+                                            )}
+                                            {isPremiumTopic ? "Premium" : "Free"}
+                                        </span>
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-xs font-black ${
+                                                canStart
+                                                    ? "bg-green-50 text-[#58CC02]"
+                                                    : "bg-slate-100 text-slate-400"
+                                            }`}
+                                        >
+                                            {canStart ? "Ready" : "Locked"}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <h3 className="break-words text-xl font-black text-slate-900">
@@ -257,7 +287,7 @@ function Learn() {
                                     </span>
                                 </div>
 
-                                {hasWords ? (
+                                {canStart ? (
                                     <Link
                                         to={`/learn/${topic.id}`}
                                         className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-5 py-3 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1"
@@ -265,6 +295,15 @@ function Learn() {
                                         <PlayCircle className="h-5 w-5" />
                                         Start Flashcards
                                     </Link>
+                                ) : isLocked ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => setPremiumModalOpen(true)}
+                                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                                    >
+                                        <Lock className="h-5 w-5" />
+                                        Unlock Premium
+                                    </button>
                                 ) : (
                                     <button
                                         type="button"

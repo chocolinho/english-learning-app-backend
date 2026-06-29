@@ -13,10 +13,12 @@ import {
     Star,
     BookOpen,
     Brain,
+    Crown,
     FileText,
     Trophy,
     Target,
     Flame,
+    Lock,
     Rocket,
     PawPrint,
     Utensils,
@@ -27,7 +29,7 @@ import {
 } from "lucide-react";
 
 function Dashboard() {
-    const { user } = useAuth();
+    const { user, isPremium } = useAuth();
 
     const displayName =
         user?.name ||
@@ -168,6 +170,11 @@ function Dashboard() {
                         Welcome back, {displayName}
                     </p>
 
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+                        <Crown className="h-4 w-4" />
+                        {isPremium ? "Premium Plan" : "Free Plan"}
+                    </div>
+
                     <h1 className="text-3xl md:text-5xl font-black leading-tight">
                         Ready to learn English today?
                     </h1>
@@ -250,6 +257,54 @@ function Dashboard() {
                 <p className="text-sm text-slate-500 font-bold mt-3">
                     {stats.xpPoints} / {stats.nextLevelXp} XP to next level
                 </p>
+            </section>
+
+            <section
+                className={`rounded-[1.75rem] border p-6 shadow-sm ${
+                    isPremium
+                        ? "border-yellow-100 bg-yellow-50"
+                        : "border-slate-100 bg-white"
+                }`}
+            >
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-start gap-4">
+                        <div
+                            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl ${
+                                isPremium
+                                    ? "bg-white text-yellow-500"
+                                    : "bg-slate-100 text-slate-500"
+                            }`}
+                        >
+                            {isPremium ? (
+                                <Crown className="h-7 w-7" />
+                            ) : (
+                                <Lock className="h-7 w-7" />
+                            )}
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900">
+                                {isPremium
+                                    ? "Premium learning unlocked"
+                                    : "Upgrade your learning toolkit"}
+                            </h2>
+                            <p className="mt-2 max-w-3xl font-semibold text-slate-500">
+                                {isPremium
+                                    ? "You can access premium topics, longer quizzes, AI features, and export tools."
+                                    : "Premium unlocks longer quizzes, premium topics, AI features, and vocabulary export."}
+                            </p>
+                        </div>
+                    </div>
+
+                    {!isPremium && (
+                        <a
+                            href="/profile"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                        >
+                            <Crown className="h-5 w-5" />
+                            View Premium
+                        </a>
+                    )}
+                </div>
             </section>
 
             <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">

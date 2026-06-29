@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Crown, Lock } from "lucide-react";
 
 import { getTopics } from "../services/topicService";
 import {
@@ -8,8 +9,11 @@ import {
     searchVocabularies,
     updateVocabulary,
 } from "../services/vocabularyService";
+import { useAuth } from "../context/AuthContext";
+import PremiumLockedModal from "../components/PremiumLockedModal";
 
 function Vocabularies() {
+    const { isAdmin, isPremium } = useAuth();
     const [vocabularies, setVocabularies] = useState([]);
     const [topics, setTopics] = useState([]);
 
@@ -30,6 +34,7 @@ function Vocabularies() {
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [premiumModalOpen, setPremiumModalOpen] = useState(false);
 
     const fetchData = async (page = 0) => {
         try {
@@ -165,6 +170,15 @@ function Vocabularies() {
             }
         } catch (error) {
             console.error(error);
+            if (error.response?.status === 403) {
+                setErrorMessage(
+                    error.response?.data?.message ||
+                        "This action requires Premium."
+                );
+                setPremiumModalOpen(true);
+                return;
+            }
+
             setErrorMessage("Failed to save vocabulary.");
         }
     };
@@ -205,6 +219,13 @@ function Vocabularies() {
 
     return (
         <div>
+            <PremiumLockedModal
+                open={premiumModalOpen}
+                title="Vocabulary limit reached"
+                description="Free learners can create up to 30 custom vocabularies. Premium unlocks unlimited custom vocabulary and export access."
+                onClose={() => setPremiumModalOpen(false)}
+            />
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800">
@@ -216,6 +237,47 @@ function Vocabularies() {
                     </p>
                 </div>
             </div>
+
+            <section className="mb-6 rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-3">
+                        <div
+                            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                                isPremium
+                                    ? "bg-yellow-100 text-yellow-600"
+                                    : "bg-slate-100 text-slate-500"
+                            }`}
+                        >
+                            {isPremium ? (
+                                <Crown className="h-6 w-6" />
+                            ) : (
+                                <Lock className="h-6 w-6" />
+                            )}
+                        </div>
+                        <div>
+                            <p className="text-sm font-black text-slate-400">
+                                Vocabulary Creator
+                            </p>
+                            <p className="font-black text-slate-800">
+                                {isPremium
+                                    ? "Unlimited custom vocabularies"
+                                    : "Free plan: up to 30 custom vocabularies"}
+                            </p>
+                        </div>
+                    </div>
+
+                    {!isPremium && (
+                        <button
+                            type="button"
+                            onClick={() => setPremiumModalOpen(true)}
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                        >
+                            <Crown className="h-5 w-5" />
+                            Upgrade
+                        </button>
+                    )}
+                </div>
+            </section>
 
             <form
                 onSubmit={handleSearch}
@@ -305,11 +367,21 @@ function Vocabularies() {
                     >
                         <option value="">Select topic</option>
 
-                        {topics.map((topic) => (
-                            <option key={topic.id} value={topic.id}>
-                                {topic.name}
-                            </option>
-                        ))}
+                        {topics.map((topic) => {
+                            const canManageTopic =
+                                isAdmin || topic.ownedByCurrentUser;
+
+                            return (
+                                <option
+                                    key={topic.id}
+                                    value={topic.id}
+                                    disabled={!canManageTopic}
+                                >
+                                    {topic.name}
+                                    {!canManageTopic ? " - read only" : ""}
+                                </option>
+                            );
+                        })}
                     </select>
                 </div>
 
@@ -383,11 +455,20 @@ function Vocabularies() {
                                 </thead>
 
                                 <tbody>
-                                {vocabularies.map((vocabulary) => (
-                                    <tr
-                                        key={vocabulary.id}
-                                        className="border-t border-slate-100"
-                                    >
+                                {vocabularies.map((vocabulary) => {
+                                    const topic = topics.find(
+                                        (item) =>
+                                            Number(item.id) ===
+                                            Number(vocabulary.topicId)
+                                    );
+                                    const canManageVocabulary =
+                                        isAdmin || topic?.ownedByCurrentUser;
+
+                                    return (
+                                        <tr
+                                            key={vocabulary.id}
+                                            className="border-t border-slate-100"
+                                        >
                                         <td className="p-4 font-black text-slate-800">
                                             {vocabulary.word}
                                         </td>
@@ -415,7 +496,8 @@ function Vocabularies() {
                                                             vocabulary
                                                         )
                                                     }
-                                                    className="px-4 py-2 rounded-xl bg-blue-50 text-blue-500 font-black hover:bg-blue-100 transition-all"
+                                                    disabled={!canManageVocabulary}
+                                                    className="px-4 py-2 rounded-xl bg-blue-50 text-blue-500 font-black hover:bg-blue-100 transition-all disabled:cursor-not-allowed disabled:opacity-40"
                                                 >
                                                     Edit
                                                 </button>
@@ -426,14 +508,16 @@ function Vocabularies() {
                                                             vocabulary.id
                                                         )
                                                     }
-                                                    className="px-4 py-2 rounded-xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all"
+                                                    disabled={!canManageVocabulary}
+                                                    className="px-4 py-2 rounded-xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all disabled:cursor-not-allowed disabled:opacity-40"
                                                 >
                                                     Delete
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                    );
+                                })}
                                 </tbody>
                             </table>
                         </div>

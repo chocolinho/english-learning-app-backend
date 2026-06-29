@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     CheckCircle2,
+    Crown,
     Flame,
     Lock,
     Mail,
@@ -15,7 +16,13 @@ import { changePassword, updateCurrentUser } from "../services/userService";
 import PageSkeleton from "../components/PageSkeleton";
 
 function Profile() {
-    const { user, fetchCurrentUser, loadingUser } = useAuth();
+    const {
+        user,
+        fetchCurrentUser,
+        loadingUser,
+        isPremium,
+        subscriptionStatus,
+    } = useAuth();
     const [username, setUsername] = useState("");
     const [passwordForm, setPasswordForm] = useState({
         oldPassword: "",
@@ -30,6 +37,9 @@ function Profile() {
     const level = user?.level ?? 1;
     const progress = Math.min(user?.levelProgress ?? 0, 100);
     const nextLevelXp = user?.nextLevelXp ?? 100;
+    const premiumUntil = user?.premiumUntil
+        ? new Date(user.premiumUntil).toLocaleDateString()
+        : null;
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -174,6 +184,50 @@ function Profile() {
                     color="bg-orange-100 text-orange-500"
                 />
             </div>
+
+            <section
+                className={`rounded-[1.75rem] border p-6 shadow-sm ${
+                    isPremium
+                        ? "border-yellow-100 bg-yellow-50"
+                        : "border-slate-100 bg-white"
+                }`}
+            >
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-start gap-4">
+                        <div
+                            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl ${
+                                isPremium
+                                    ? "bg-white text-yellow-500"
+                                    : "bg-slate-100 text-slate-500"
+                            }`}
+                        >
+                            <Crown className="h-7 w-7" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-black text-slate-400">
+                                Current Plan
+                            </p>
+                            <h2 className="text-2xl font-black text-slate-900">
+                                {isPremium ? "Premium" : "Free"} Plan
+                            </h2>
+                            <p className="mt-2 font-semibold text-slate-500">
+                                Status: {subscriptionStatus}
+                                {premiumUntil ? ` - valid until ${premiumUntil}` : ""}
+                            </p>
+                        </div>
+                    </div>
+
+                    {!isPremium && (
+                        <button
+                            type="button"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                        >
+                            <Crown className="h-5 w-5" />
+                            Upgrade to Premium
+                        </button>
+                    )}
+                </div>
+            </section>
 
             <div className="grid gap-5 lg:grid-cols-2">
                 <form

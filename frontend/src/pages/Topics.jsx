@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
+import { Crown, Lock } from "lucide-react";
 import {
     createTopic,
     deleteTopic,
     getTopics,
     updateTopic,
 } from "../services/topicService";
+import { useAuth } from "../context/AuthContext";
+import PremiumLockedModal from "../components/PremiumLockedModal";
 
 function Topics() {
+    const { isPremium } = useAuth();
     const [topics, setTopics] = useState([]);
     const [name, setName] = useState("");
 
     const [editingId, setEditingId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [premiumModalOpen, setPremiumModalOpen] = useState(false);
 
     const fetchTopics = async () => {
         try {
@@ -62,6 +67,15 @@ function Topics() {
             fetchTopics();
         } catch (error) {
             console.error(error);
+            if (error.response?.status === 403) {
+                setErrorMessage(
+                    error.response?.data?.message ||
+                        "This action requires Premium."
+                );
+                setPremiumModalOpen(true);
+                return;
+            }
+
             setErrorMessage("Failed to save topic.");
         }
     };
@@ -90,6 +104,13 @@ function Topics() {
 
     return (
         <div>
+            <PremiumLockedModal
+                open={premiumModalOpen}
+                title="Custom topic limit reached"
+                description="Free learners can create up to 3 custom topics. Premium removes this limit and unlocks more learning tools."
+                onClose={() => setPremiumModalOpen(false)}
+            />
+
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800">
@@ -100,6 +121,47 @@ function Topics() {
                     </p>
                 </div>
             </div>
+
+            <section className="mb-6 rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-3">
+                        <div
+                            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                                isPremium
+                                    ? "bg-yellow-100 text-yellow-600"
+                                    : "bg-slate-100 text-slate-500"
+                            }`}
+                        >
+                            {isPremium ? (
+                                <Crown className="h-6 w-6" />
+                            ) : (
+                                <Lock className="h-6 w-6" />
+                            )}
+                        </div>
+                        <div>
+                            <p className="text-sm font-black text-slate-400">
+                                Topic Creator
+                            </p>
+                            <p className="font-black text-slate-800">
+                                {isPremium
+                                    ? "Unlimited custom topics"
+                                    : "Free plan: up to 3 custom topics"}
+                            </p>
+                        </div>
+                    </div>
+
+                    {!isPremium && (
+                        <button
+                            type="button"
+                            onClick={() => setPremiumModalOpen(true)}
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                        >
+                            <Crown className="h-5 w-5" />
+                            Upgrade
+                        </button>
+                    )}
+                </div>
+            </section>
 
             <form
                 onSubmit={handleSubmit}
@@ -173,6 +235,9 @@ function Topics() {
                             <th className="text-left p-4 text-slate-500 text-sm">
                                 Name
                             </th>
+                            <th className="text-left p-4 text-slate-500 text-sm">
+                                Access
+                            </th>
                             <th className="text-right p-4 text-slate-500 text-sm">
                                 Actions
                             </th>
@@ -191,6 +256,18 @@ function Topics() {
 
                                 <td className="p-4 font-bold text-slate-800">
                                     {topic.name}
+                                </td>
+
+                                <td className="p-4">
+                                    <span
+                                        className={`rounded-full px-3 py-1 text-sm font-black ${
+                                            topic.accessType === "PREMIUM"
+                                                ? "bg-yellow-100 text-yellow-700"
+                                                : "bg-green-50 text-[#58CC02]"
+                                        }`}
+                                    >
+                                        {topic.accessType || "FREE"}
+                                    </span>
                                 </td>
 
                                 <td className="p-4">

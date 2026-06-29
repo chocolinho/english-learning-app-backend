@@ -44,8 +44,13 @@ public class QuizController {
     }
 
     @GetMapping("/topic/{topicId}/questions")
-    public List<VocabularyResponse> getQuizQuestionsByTopic(@PathVariable Long topicId) {
-        return vocabularyService.getVocabulariesByTopicId(topicId);
+    public List<VocabularyResponse> getQuizQuestionsByTopic(
+            @PathVariable Long topicId,
+            @RequestParam(required = false) Integer limit,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        return vocabularyService.getQuizQuestionsByTopic(topicId, user, limit);
     }
 
     private User getCurrentUser(Authentication authentication) {

@@ -28,6 +28,16 @@ public class User {
     @Builder.Default
     private Role role = Role.USER;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private SubscriptionType subscriptionType = SubscriptionType.FREE;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private SubscriptionStatus subscriptionStatus = SubscriptionStatus.ACTIVE;
+
+    private LocalDate premiumUntil;
+
     @Builder.Default
     private Integer xp = 0;
 

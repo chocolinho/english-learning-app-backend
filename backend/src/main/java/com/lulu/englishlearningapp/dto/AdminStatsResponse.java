@@ -11,7 +11,15 @@ public class AdminStatsResponse {
 
     private long totalUsers;
 
+    private long freeUsers;
+
+    private long premiumUsers;
+
     private long totalTopics;
+
+    private long freeTopics;
+
+    private long premiumTopics;
 
     private long totalVocabularies;
 

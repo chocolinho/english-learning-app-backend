@@ -8,6 +8,7 @@ import {
     ChevronRight,
     GraduationCap,
     Heart,
+    Lock,
     RotateCcw,
     Sparkles,
     Volume2,
@@ -18,6 +19,7 @@ import {
     updateVocabularyProgress,
 } from "../services/vocabularyService";
 import { addFavoriteVocabulary } from "../services/favoriteService";
+import PremiumLockedModal from "../components/PremiumLockedModal";
 
 function LearnTopic() {
     const { topicId } = useParams();
@@ -27,6 +29,7 @@ function LearnTopic() {
     const [loading, setLoading] = useState(true);
     const [completed, setCompleted] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [premiumLocked, setPremiumLocked] = useState(false);
     const [favoriteMessage, setFavoriteMessage] = useState("");
     const [progressByVocabularyId, setProgressByVocabularyId] = useState({});
 
@@ -35,6 +38,7 @@ function LearnTopic() {
             try {
                 setLoading(true);
                 setErrorMessage("");
+                setPremiumLocked(false);
 
                 const [data, progressData] = await Promise.all([
                     getVocabulariesByTopic(topicId),
@@ -54,6 +58,15 @@ function LearnTopic() {
                 setCompleted(false);
             } catch (error) {
                 console.error("Failed to load vocabularies by topic", error);
+                if (error.response?.status === 403) {
+                    setPremiumLocked(true);
+                    setErrorMessage(
+                        error.response?.data?.message ||
+                            "This topic requires Premium access."
+                    );
+                    return;
+                }
+
                 setErrorMessage("Could not load this lesson right now.");
             } finally {
                 setLoading(false);
@@ -152,12 +165,32 @@ function LearnTopic() {
 
     if (errorMessage) {
         return (
-            <div className="mx-auto max-w-2xl rounded-[2rem] border border-red-100 bg-red-50 p-8 text-center">
-                <BookOpen className="mx-auto mb-4 h-12 w-12 text-red-400" />
+            <div
+                className={`mx-auto max-w-2xl rounded-[2rem] border p-8 text-center ${
+                    premiumLocked
+                        ? "border-yellow-100 bg-yellow-50"
+                        : "border-red-100 bg-red-50"
+                }`}
+            >
+                <PremiumLockedModal
+                    open={premiumLocked}
+                    title="Premium lesson locked"
+                    description="Upgrade to Premium to open this lesson and continue practicing advanced topics."
+                    onClose={() => setPremiumLocked(false)}
+                />
+                {premiumLocked ? (
+                    <Lock className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
+                ) : (
+                    <BookOpen className="mx-auto mb-4 h-12 w-12 text-red-400" />
+                )}
                 <h1 className="text-2xl font-black text-slate-900">
-                    Lesson unavailable
+                    {premiumLocked ? "Premium lesson" : "Lesson unavailable"}
                 </h1>
-                <p className="mt-3 font-semibold text-red-500">
+                <p
+                    className={`mt-3 font-semibold ${
+                        premiumLocked ? "text-yellow-700" : "text-red-500"
+                    }`}
+                >
                     {errorMessage}
                 </p>
                 <Link
@@ -285,7 +318,7 @@ function LearnTopic() {
                     >
                         <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-black text-[#58CC02]">
                             <Sparkles className="h-4 w-4" />
-                            {currentProgress?.status || "NEW"} · Tap to flip
+                            {currentProgress?.status || "NEW"} - Tap to flip
                         </div>
 
                         <h1 className="max-w-full break-words text-5xl font-black text-slate-900 md:text-7xl">

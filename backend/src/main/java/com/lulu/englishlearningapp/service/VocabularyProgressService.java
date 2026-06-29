@@ -18,10 +18,12 @@ public class VocabularyProgressService {
 
     private final UserVocabularyProgressRepository progressRepository;
     private final VocabularyRepository vocabularyRepository;
+    private final SubscriptionService subscriptionService;
 
     public List<VocabularyProgressResponse> getMyProgress(User user) {
         return progressRepository.findByUserOrderByLastReviewedAtDesc(user)
                 .stream()
+                .filter(progress -> subscriptionService.canAccessTopic(user, progress.getVocabulary().getTopic()))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -33,6 +35,7 @@ public class VocabularyProgressService {
 
         Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
                 .orElseThrow(() -> new RuntimeException("Vocabulary not found"));
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
 
         UserVocabularyProgress progress = getOrCreate(user, vocabulary);
         progress.setStatus(request.getStatus() == null
@@ -45,6 +48,7 @@ public class VocabularyProgressService {
     }
 
     public VocabularyProgressResponse recordLearning(User user, Vocabulary vocabulary) {
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
         UserVocabularyProgress progress = getOrCreate(user, vocabulary);
 
         if (progress.getStatus() == VocabularyProgressStatus.NEW) {
@@ -58,6 +62,7 @@ public class VocabularyProgressService {
     }
 
     public VocabularyProgressResponse recordAnswer(User user, Vocabulary vocabulary, boolean correct) {
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
         UserVocabularyProgress progress = getOrCreate(user, vocabulary);
 
         if (correct) {

@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { BarChart3, BookOpen, Brain, ClipboardCheck, Users } from "lucide-react";
+import {
+    BarChart3,
+    BookOpen,
+    Brain,
+    ClipboardCheck,
+    Crown,
+    Lock,
+    Users,
+} from "lucide-react";
 import PageSkeleton from "../../components/PageSkeleton";
 import { getAdminStats } from "../../services/adminService";
 
@@ -37,10 +45,34 @@ function AdminDashboard() {
             color: "bg-sky-100 text-[#1CB0F6]",
         },
         {
+            label: "Free Users",
+            value: stats?.freeUsers ?? 0,
+            icon: Lock,
+            color: "bg-slate-100 text-slate-500",
+        },
+        {
+            label: "Premium Users",
+            value: stats?.premiumUsers ?? 0,
+            icon: Crown,
+            color: "bg-yellow-100 text-yellow-600",
+        },
+        {
             label: "Topics",
             value: stats?.totalTopics ?? 0,
             icon: BookOpen,
             color: "bg-green-100 text-[#58CC02]",
+        },
+        {
+            label: "Free Topics",
+            value: stats?.freeTopics ?? 0,
+            icon: BookOpen,
+            color: "bg-emerald-100 text-emerald-600",
+        },
+        {
+            label: "Premium Topics",
+            value: stats?.premiumTopics ?? 0,
+            icon: Crown,
+            color: "bg-amber-100 text-amber-600",
         },
         {
             label: "Vocabularies",

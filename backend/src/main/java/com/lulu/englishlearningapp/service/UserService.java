@@ -18,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubscriptionService subscriptionService;
 
     public UserResponse getCurrentUserResponse(User user) {
         int totalXp = user.getXp() == null ? 0 : user.getXp();
@@ -29,6 +30,10 @@ public class UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(role)
+                .subscriptionType(subscriptionService.getSubscriptionType(user))
+                .subscriptionStatus(subscriptionService.getSubscriptionStatus(user))
+                .premiumUntil(user.getPremiumUntil())
+                .premium(subscriptionService.isPremium(user))
                 .xp(totalXp)
                 .level(level)
                 .currentLevelXp(getCurrentLevelXp(level))

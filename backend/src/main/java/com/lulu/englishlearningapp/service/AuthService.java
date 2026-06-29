@@ -3,6 +3,8 @@ package com.lulu.englishlearningapp.service;
 import com.lulu.englishlearningapp.dto.RegisterRequest;
 import com.lulu.englishlearningapp.dto.UserResponse;
 import com.lulu.englishlearningapp.entity.Role;
+import com.lulu.englishlearningapp.entity.SubscriptionStatus;
+import com.lulu.englishlearningapp.entity.SubscriptionType;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserService userService;
+    private final SubscriptionService subscriptionService;
 
     public UserResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -30,6 +33,8 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .subscriptionType(SubscriptionType.FREE)
+                .subscriptionStatus(SubscriptionStatus.ACTIVE)
                 .build();
 
         return userService.getCurrentUserResponse(userRepository.save(user));
@@ -54,6 +59,10 @@ public class AuthService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(role)
+                .subscriptionType(subscriptionService.getSubscriptionType(user))
+                .subscriptionStatus(subscriptionService.getSubscriptionStatus(user))
+                .premiumUntil(user.getPremiumUntil())
+                .premium(subscriptionService.isPremium(user))
                 .token(token)
                 .build();
     }

@@ -20,6 +20,7 @@ public class WrongAnswerService {
 
     private final WrongAnswerRepository wrongAnswerRepository;
     private final VocabularyProgressService vocabularyProgressService;
+    private final SubscriptionService subscriptionService;
 
     public void recordWrongAnswer(User user, Vocabulary vocabulary, String submittedAnswer) {
         WrongAnswer wrongAnswer = wrongAnswerRepository.findByUserAndVocabulary(user, vocabulary)
@@ -48,6 +49,7 @@ public class WrongAnswerService {
     public List<WrongAnswerResponse> getMyWrongAnswers(User user) {
         return wrongAnswerRepository.findByUserAndResolvedFalseOrderByLastMistakeAtDesc(user)
                 .stream()
+                .filter(wrongAnswer -> subscriptionService.canAccessTopic(user, wrongAnswer.getVocabulary().getTopic()))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -68,6 +70,8 @@ public class WrongAnswerService {
         }
 
         Vocabulary vocabulary = wrongAnswer.getVocabulary();
+        subscriptionService.enforceTopicAccess(user, vocabulary.getTopic());
+
         String submittedAnswer = request.getAnswer() == null ? "" : request.getAnswer().trim();
         boolean correct = vocabulary.getMeaning().equalsIgnoreCase(submittedAnswer);
 

@@ -53,6 +53,9 @@ export function AuthProvider({ children }) {
     const isAuthenticated = !!token;
     const role = user?.role || "USER";
     const isAdmin = role === "ADMIN";
+    const subscriptionType = user?.subscriptionType || "FREE";
+    const subscriptionStatus = user?.subscriptionStatus || "ACTIVE";
+    const isPremium = Boolean(user?.premium);
 
     return (
         <AuthContext.Provider
@@ -63,6 +66,9 @@ export function AuthProvider({ children }) {
                 isAuthenticated,
                 role,
                 isAdmin,
+                subscriptionType,
+                subscriptionStatus,
+                isPremium,
                 loginSuccess,
                 logout,
                 fetchCurrentUser,

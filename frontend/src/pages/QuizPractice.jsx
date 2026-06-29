@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
     CheckCircle2,
     ChevronRight,
+    Crown,
+    Lock,
     RotateCcw,
     Sparkles,
     Star,
@@ -14,9 +16,10 @@ import { getTopics } from "../services/topicService";
 import { getQuizQuestionsByTopic, submitQuizResult } from "../services/quizService";
 import { useAuth } from "../context/AuthContext";
 import PageSkeleton from "../components/PageSkeleton";
+import PremiumLockedModal from "../components/PremiumLockedModal";
 
 function QuizPractice() {
-    const { fetchCurrentUser } = useAuth();
+    const { fetchCurrentUser, isPremium } = useAuth();
     const [questions, setQuestions] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -27,6 +30,10 @@ function QuizPractice() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [questionLimit, setQuestionLimit] = useState(5);
+    const [premiumModalOpen, setPremiumModalOpen] = useState(false);
+
+    const quizLengthOptions = [5, 10, 20, 30];
 
     const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
 
@@ -81,10 +88,17 @@ function QuizPractice() {
             setSelectedOption(null);
             setCurrentIndex(0);
 
+            const effectiveQuestionLimit = isPremium
+                ? Number(questionLimit)
+                : 5;
+
             const [topicData, vocabularyData] = await Promise.all([
                 getTopics(),
                 selectedTopicId
-                    ? getQuizQuestionsByTopic(selectedTopicId)
+                    ? getQuizQuestionsByTopic(
+                        selectedTopicId,
+                        effectiveQuestionLimit
+                    )
                     : getVocabularies(),
             ]);
 
@@ -103,7 +117,7 @@ function QuizPractice() {
 
             const selectedVocabularies = shuffleArray(cleanVocabularies).slice(
                 0,
-                Math.min(5, cleanVocabularies.length)
+                Math.min(effectiveQuestionLimit, cleanVocabularies.length)
             );
 
             setQuestions(
@@ -116,7 +130,9 @@ function QuizPractice() {
             );
         } catch (error) {
             console.error(error);
-            setErrorMessage("Failed to load quiz questions.");
+            setErrorMessage(
+                error.response?.data?.message || "Failed to load quiz questions."
+            );
         } finally {
             setLoading(false);
         }
@@ -164,6 +180,14 @@ function QuizPractice() {
             await fetchCurrentUser();
         } catch (error) {
             console.error("Submit quiz failed:", error);
+            if (error.response?.status === 403) {
+                setErrorMessage(
+                    error.response?.data?.message ||
+                        "This quiz length requires Premium."
+                );
+                return;
+            }
+
             setResult({
                 totalQuestions,
                 correctAnswers,
@@ -217,30 +241,74 @@ function QuizPractice() {
 
     const renderTopicSelector = () => (
         <div className="mb-5 rounded-[1.75rem] border border-slate-100 bg-white p-4 shadow-sm">
-            <label
-                htmlFor="quiz-topic"
-                className="mb-2 block text-sm font-black text-slate-500"
-            >
-                Quiz Topic
-            </label>
-            <div className="flex flex-col gap-3 sm:flex-row">
-                <select
-                    id="quiz-topic"
-                    value={selectedTopicId}
-                    onChange={(event) => setSelectedTopicId(event.target.value)}
-                    className="min-h-12 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
-                >
-                    <option value="">All topics</option>
-                    {topics.map((topic) => (
-                        <option
-                            key={topic.id}
-                            value={topic.id}
-                            disabled={(topic.vocabularyCount ?? 0) < 4}
-                        >
-                            {topic.name} ({topic.vocabularyCount ?? 0} words)
-                        </option>
-                    ))}
-                </select>
+            <div className="grid gap-4 lg:grid-cols-[1fr_220px_auto] lg:items-end">
+                <div>
+                    <label
+                        htmlFor="quiz-topic"
+                        className="mb-2 block text-sm font-black text-slate-500"
+                    >
+                        Quiz Topic
+                    </label>
+                    <select
+                        id="quiz-topic"
+                        value={selectedTopicId}
+                        onChange={(event) =>
+                            setSelectedTopicId(event.target.value)
+                        }
+                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                    >
+                        <option value="">All topics</option>
+                        {topics.map((topic) => (
+                            <option
+                                key={topic.id}
+                                value={topic.id}
+                                disabled={
+                                    (topic.vocabularyCount ?? 0) < 4 ||
+                                    topic.locked
+                                }
+                            >
+                                {topic.name} ({topic.vocabularyCount ?? 0} words)
+                                {topic.locked ? " - Premium" : ""}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        htmlFor="quiz-length"
+                        className="mb-2 block text-sm font-black text-slate-500"
+                    >
+                        Quiz Length
+                    </label>
+                    <select
+                        id="quiz-length"
+                        value={questionLimit}
+                        onChange={(event) => {
+                            const nextValue = Number(event.target.value);
+
+                            if (!isPremium && nextValue > 5) {
+                                setPremiumModalOpen(true);
+                                return;
+                            }
+
+                            setQuestionLimit(nextValue);
+                        }}
+                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                    >
+                        {quizLengthOptions.map((option) => (
+                            <option
+                                key={option}
+                                value={option}
+                                disabled={!isPremium && option > 5}
+                            >
+                                {option} questions
+                                {!isPremium && option > 5 ? " - Premium" : ""}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <button
                     type="button"
                     onClick={loadQuestions}
@@ -249,12 +317,29 @@ function QuizPractice() {
                     Load Quiz
                 </button>
             </div>
+
+            {!isPremium && (
+                <button
+                    type="button"
+                    onClick={() => setPremiumModalOpen(true)}
+                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-yellow-100 px-4 py-3 text-sm font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                >
+                    <Lock className="h-4 w-4" />
+                    Unlock 10, 20, 30-question quizzes
+                </button>
+            )}
         </div>
     );
 
     if (!currentQuestion) {
         return (
             <div className="mx-auto max-w-3xl">
+                <PremiumLockedModal
+                    open={premiumModalOpen}
+                    title="Longer quizzes are Premium"
+                    description="Free learners can practice 5 questions per quiz. Premium unlocks longer quizzes and advanced learning tools."
+                    onClose={() => setPremiumModalOpen(false)}
+                />
                 {renderTopicSelector()}
                 <div className="rounded-[2rem] border border-yellow-100 bg-yellow-50 p-8 text-center">
                     <Target className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
@@ -416,6 +501,13 @@ function QuizPractice() {
 
     return (
         <div className="mx-auto max-w-3xl">
+            <PremiumLockedModal
+                open={premiumModalOpen}
+                title="Longer quizzes are Premium"
+                description="Free learners can practice 5 questions per quiz. Premium unlocks longer quizzes and advanced learning tools."
+                onClose={() => setPremiumModalOpen(false)}
+            />
+
             {renderTopicSelector()}
 
             <div className="mb-6">
@@ -424,6 +516,15 @@ function QuizPractice() {
                         Question {currentIndex + 1} of {questions.length}
                     </p>
                     <p className="font-black text-[#58CC02]">{progress}%</p>
+                </div>
+
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-slate-500 shadow-sm">
+                    {isPremium ? (
+                        <Crown className="h-4 w-4 text-yellow-500" />
+                    ) : (
+                        <Lock className="h-4 w-4 text-slate-400" />
+                    )}
+                    {isPremium ? "Premium quiz length" : "Free quiz: 5 questions"}
                 </div>
 
                 <div

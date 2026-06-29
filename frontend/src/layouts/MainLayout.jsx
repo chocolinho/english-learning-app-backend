@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     BookOpen,
     Brain,
+    Crown,
     Flame,
     GraduationCap,
     Heart,
@@ -16,7 +17,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 function MainLayout() {
-    const { logout, user, loadingUser } = useAuth();
+    const { logout, user, loadingUser, isPremium } = useAuth();
     const navigate = useNavigate();
 
     const displayName = user?.username || user?.email || "Learner";
@@ -25,6 +26,7 @@ function MainLayout() {
     const levelProgress = Math.min(user?.levelProgress ?? 0, 100);
     const nextLevelXp = user?.nextLevelXp ?? 100;
     const isAdmin = user?.role === "ADMIN";
+    const planLabel = isPremium ? "Premium" : "Free";
 
     const handleLogout = () => {
         logout();
@@ -89,6 +91,17 @@ function MainLayout() {
                                 Level {level} - {totalXp} XP
                             </p>
                         </div>
+                    </div>
+
+                    <div
+                        className={`mt-4 inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-black ${
+                            isPremium
+                                ? "bg-yellow-100 text-yellow-600"
+                                : "bg-slate-100 text-slate-500"
+                        }`}
+                    >
+                        <Crown className="h-4 w-4" />
+                        {planLabel} Plan
                     </div>
 
                     <div className="mt-4 h-3 overflow-hidden rounded-full bg-white">
@@ -164,7 +177,7 @@ function MainLayout() {
                                 LinguaKid
                             </h1>
                             <p className="truncate text-xs font-bold text-slate-400">
-                                {displayName} - Level {level}
+                                {displayName} - Level {level} - {planLabel}
                             </p>
                         </div>
                     </div>

@@ -40,6 +40,18 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
+    @ExceptionHandler(FeatureLockedException.class)
+    public ResponseEntity<Map<String, String>> handleFeatureLockedException(
+            FeatureLockedException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(error);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(
             RuntimeException ex) {
