@@ -22,6 +22,7 @@ const ReviewWrongAnswers = lazy(() => import("./pages/ReviewWrongAnswers"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminTopics = lazy(() => import("./pages/admin/AdminTopics"));
 
 function App() {
     return (
@@ -39,6 +40,7 @@ function App() {
                         }
                     >
                         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                        <Route path="/admin/topics" element={<AdminTopics />} />
                     </Route>
                     <Route
                         element={

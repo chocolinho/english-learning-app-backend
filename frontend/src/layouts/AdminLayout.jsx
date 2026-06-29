@@ -64,6 +64,10 @@ function AdminLayout() {
                         <LayoutDashboard className="h-5 w-5" />
                         Dashboard
                     </NavLink>
+                    <NavLink to="/admin/topics" className={navLinkClass}>
+                        <BookOpen className="h-5 w-5" />
+                        Topics
+                    </NavLink>
                     <NavLink to="/dashboard" className={navLinkClass}>
                         <Home className="h-5 w-5" />
                         User App
@@ -105,7 +109,7 @@ function AdminLayout() {
                     </button>
                 </div>
 
-                <nav className="mt-3 grid grid-cols-2 gap-2" aria-label="Mobile admin navigation">
+                <nav className="mt-3 grid grid-cols-3 gap-2" aria-label="Mobile admin navigation">
                     <NavLink
                         to="/admin/dashboard"
                         className={({ isActive }) =>
@@ -118,6 +122,19 @@ function AdminLayout() {
                     >
                         <BarChart3 className="h-4 w-4" />
                         Admin
+                    </NavLink>
+                    <NavLink
+                        to="/admin/topics"
+                        className={({ isActive }) =>
+                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-black ${
+                                isActive
+                                    ? "bg-sky-50 text-[#1CB0F6]"
+                                    : "bg-slate-50 text-slate-500"
+                            }`
+                        }
+                    >
+                        <BookOpen className="h-4 w-4" />
+                        Topics
                     </NavLink>
                     <NavLink
                         to="/dashboard"
