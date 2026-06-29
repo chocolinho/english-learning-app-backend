@@ -1,0 +1,188 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Crown, FileText, Receipt, RefreshCcw } from "lucide-react";
+import PageSkeleton from "../components/PageSkeleton";
+import { getPaymentHistory } from "../services/paymentService";
+
+function PaymentHistory() {
+    const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const fetchPayments = useCallback(async () => {
+        try {
+            setLoading(true);
+            setErrorMessage("");
+            setPayments(await getPaymentHistory());
+        } catch (error) {
+            console.error(error);
+            setErrorMessage("Failed to load payment history.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchPayments();
+    }, [fetchPayments]);
+
+    const totalPaid = useMemo(
+        () =>
+            payments
+                .filter((payment) => payment.status === "SUCCESS")
+                .reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
+        [payments]
+    );
+
+    if (loading) {
+        return <PageSkeleton variant="dashboard" />;
+    }
+
+    return (
+        <div className="mx-auto max-w-6xl space-y-6">
+            <section className="rounded-[2rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-yellow-300 p-6 text-white shadow-xl shadow-sky-100 md:p-8">
+                <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+                            <Receipt className="h-4 w-4" />
+                            Payment History
+                        </div>
+                        <h1 className="text-3xl font-black md:text-5xl">
+                            Your Premium payments
+                        </h1>
+                        <p className="mt-3 max-w-2xl font-semibold text-white/90">
+                            Track mock subscription transactions created from the Premium page.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={fetchPayments}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-black text-[#1CB0F6] shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-white/40"
+                    >
+                        <RefreshCcw className="h-5 w-5" />
+                        Refresh
+                    </button>
+                </div>
+            </section>
+
+            {errorMessage && (
+                <div className="rounded-3xl bg-red-50 p-4 font-bold text-red-500">
+                    {errorMessage}
+                </div>
+            )}
+
+            <section className="grid gap-4 md:grid-cols-3">
+                <PaymentStat
+                    icon={<Receipt className="h-7 w-7" />}
+                    label="Transactions"
+                    value={payments.length}
+                    color="bg-sky-100 text-[#1CB0F6]"
+                />
+                <PaymentStat
+                    icon={<Crown className="h-7 w-7" />}
+                    label="Successful Payments"
+                    value={payments.filter((payment) => payment.status === "SUCCESS").length}
+                    color="bg-yellow-100 text-yellow-600"
+                />
+                <PaymentStat
+                    icon={<FileText className="h-7 w-7" />}
+                    label="Total Paid"
+                    value={`$${totalPaid}`}
+                    color="bg-green-100 text-[#58CC02]"
+                />
+            </section>
+
+            <section className="overflow-hidden rounded-[1.75rem] border border-slate-100 bg-white shadow-sm">
+                <div className="border-b border-slate-100 p-5">
+                    <h2 className="text-2xl font-black text-slate-900">
+                        Transactions
+                    </h2>
+                    <p className="mt-1 font-semibold text-slate-500">
+                        Latest payments are shown first.
+                    </p>
+                </div>
+
+                {payments.length === 0 ? (
+                    <div className="p-8 text-center">
+                        <Receipt className="mx-auto mb-4 h-12 w-12 text-slate-300" />
+                        <p className="font-black text-slate-500">
+                            No payment history yet.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[760px]">
+                            <thead className="bg-slate-50">
+                                <tr>
+                                    <TableHeader>ID</TableHeader>
+                                    <TableHeader>Plan</TableHeader>
+                                    <TableHeader>Amount</TableHeader>
+                                    <TableHeader>Status</TableHeader>
+                                    <TableHeader>Provider</TableHeader>
+                                    <TableHeader>Paid At</TableHeader>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {payments.map((payment) => (
+                                    <tr
+                                        key={payment.id}
+                                        className="border-t border-slate-100"
+                                    >
+                                        <td className="p-4 font-black text-slate-500">
+                                            #{payment.id}
+                                        </td>
+                                        <td className="p-4 font-black text-slate-900">
+                                            {payment.planType}
+                                        </td>
+                                        <td className="p-4 font-black text-slate-700">
+                                            ${payment.amount}
+                                        </td>
+                                        <td className="p-4">
+                                            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-[#58CC02]">
+                                                {payment.status}
+                                            </span>
+                                        </td>
+                                        <td className="p-4 font-bold text-slate-500">
+                                            {payment.provider}
+                                        </td>
+                                        <td className="p-4 font-bold text-slate-500">
+                                            {formatDateTime(payment.paidAt)}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
+        </div>
+    );
+}
+
+function PaymentStat({ icon, label, value, color }) {
+    return (
+        <article className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+            <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${color}`}>
+                {icon}
+            </div>
+            <p className="text-sm font-black text-slate-400">{label}</p>
+            <p className="mt-1 text-4xl font-black text-slate-900">{value}</p>
+        </article>
+    );
+}
+
+function TableHeader({ children }) {
+    return (
+        <th className="p-4 text-left text-sm font-black text-slate-500">
+            {children}
+        </th>
+    );
+}
+
+function formatDateTime(value) {
+    if (!value) return "-";
+    return new Date(value).toLocaleString();
+}
+
+export default PaymentHistory;

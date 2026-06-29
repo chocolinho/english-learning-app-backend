@@ -21,6 +21,8 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const ReviewWrongAnswers = lazy(() => import("./pages/ReviewWrongAnswers"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Premium = lazy(() => import("./pages/Premium"));
+const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminTopics = lazy(() => import("./pages/admin/AdminTopics"));
 
@@ -60,6 +62,8 @@ function App() {
                         <Route path="/review" element={<ReviewWrongAnswers />} />
                         <Route path="/favorites" element={<Favorites />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/premium" element={<Premium />} />
+                        <Route path="/payments" element={<PaymentHistory />} />
                     </Route>
                 </Routes>
             </Suspense>

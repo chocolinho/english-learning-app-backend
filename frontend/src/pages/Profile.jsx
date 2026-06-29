@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
     CheckCircle2,
     Crown,
@@ -218,13 +219,13 @@ function Profile() {
                     </div>
 
                     {!isPremium && (
-                        <button
-                            type="button"
+                        <Link
+                            to="/premium"
                             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                         >
                             <Crown className="h-5 w-5" />
                             Upgrade to Premium
-                        </button>
+                        </Link>
                     )}
                 </div>
             </section>
