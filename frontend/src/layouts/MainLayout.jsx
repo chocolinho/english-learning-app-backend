@@ -7,6 +7,7 @@ import {
     Heart,
     Home,
     LogOut,
+    ShieldCheck,
     Sparkles,
     Target,
     Trophy,
@@ -23,6 +24,7 @@ function MainLayout() {
     const level = user?.level ?? 1;
     const levelProgress = Math.min(user?.levelProgress ?? 0, 100);
     const nextLevelXp = user?.nextLevelXp ?? 100;
+    const isAdmin = user?.role === "ADMIN";
 
     const handleLogout = () => {
         logout();
@@ -37,6 +39,9 @@ function MainLayout() {
     ];
 
     const secondaryNavItems = [
+        ...(isAdmin
+            ? [{ to: "/admin/dashboard", label: "Admin", icon: ShieldCheck }]
+            : []),
         { to: "/achievements", label: "Badges", icon: Flame },
         { to: "/review", label: "Review", icon: Sparkles },
         { to: "/favorites", label: "Favorites", icon: Heart },

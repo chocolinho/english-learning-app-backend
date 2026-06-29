@@ -1,5 +1,7 @@
 package com.lulu.englishlearningapp.security;
 
+import com.lulu.englishlearningapp.entity.User;
+import com.lulu.englishlearningapp.entity.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,18 @@ public class JwtService {
     public String generateToken(String email) {
         return Jwts.builder()
                 .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))
+                .compact();
+    }
+
+    public String generateToken(User user) {
+        Role role = user.getRole() == null ? Role.USER : user.getRole();
+
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .claim("role", role.name())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)))

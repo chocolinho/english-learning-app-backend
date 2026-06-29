@@ -1,6 +1,8 @@
 package com.lulu.englishlearningapp.service;
 
 import com.lulu.englishlearningapp.dto.RegisterRequest;
+import com.lulu.englishlearningapp.dto.UserResponse;
+import com.lulu.englishlearningapp.entity.Role;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +18,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UserService userService;
 
-    public User register(RegisterRequest request) {
+    public UserResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
@@ -26,9 +29,10 @@ public class AuthService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
 
-        return userRepository.save(user);
+        return userService.getCurrentUserResponse(userRepository.save(user));
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -42,12 +46,14 @@ public class AuthService {
 
             throw new RuntimeException("Invalid email or password");
         }
-        String token = jwtService.generateToken(user.getEmail());
+        Role role = user.getRole() == null ? Role.USER : user.getRole();
+        String token = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .message("Login successful")
                 .userId(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .role(role)
                 .token(token)
                 .build();
     }

@@ -51,6 +51,8 @@ export function AuthProvider({ children }) {
     }, [token, fetchCurrentUser]);
 
     const isAuthenticated = !!token;
+    const role = user?.role || "USER";
+    const isAdmin = role === "ADMIN";
 
     return (
         <AuthContext.Provider
@@ -59,6 +61,8 @@ export function AuthProvider({ children }) {
                 user,
                 loadingUser,
                 isAuthenticated,
+                role,
+                isAdmin,
                 loginSuccess,
                 logout,
                 fetchCurrentUser,

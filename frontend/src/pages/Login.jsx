@@ -45,7 +45,7 @@ function Login() {
             }
 
             loginSuccess(data.token);
-            navigate("/dashboard");
+            navigate(data.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
         } catch (error) {
             console.error(error);
 

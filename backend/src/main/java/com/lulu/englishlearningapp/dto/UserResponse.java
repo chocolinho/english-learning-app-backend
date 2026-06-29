@@ -1,5 +1,6 @@
 package com.lulu.englishlearningapp.dto;
 
+import com.lulu.englishlearningapp.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ public class UserResponse {
     private Long id;
     private String username;
     private String email;
+    private Role role;
 
     private Integer xp;
     private int level;

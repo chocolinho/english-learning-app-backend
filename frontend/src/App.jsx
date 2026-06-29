@@ -2,7 +2,9 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import PageSkeleton from "./components/PageSkeleton";
+import AdminLayout from "./layouts/AdminLayout";
 import MainLayout from "./layouts/MainLayout";
 
 const LandingPage = lazy(() => import("./pages/LandingPage"));
@@ -19,6 +21,7 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const ReviewWrongAnswers = lazy(() => import("./pages/ReviewWrongAnswers"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const Profile = lazy(() => import("./pages/Profile"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
 function App() {
     return (
@@ -28,6 +31,15 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route
+                        element={
+                            <AdminRoute>
+                                <AdminLayout />
+                            </AdminRoute>
+                        }
+                    >
+                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                    </Route>
                     <Route
                         element={
                             <ProtectedRoute>

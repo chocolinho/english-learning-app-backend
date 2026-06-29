@@ -3,6 +3,7 @@ package com.lulu.englishlearningapp.service;
 import com.lulu.englishlearningapp.dto.ChangePasswordRequest;
 import com.lulu.englishlearningapp.dto.UpdateProfileRequest;
 import com.lulu.englishlearningapp.dto.UserResponse;
+import com.lulu.englishlearningapp.entity.Role;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,13 @@ public class UserService {
     public UserResponse getCurrentUserResponse(User user) {
         int totalXp = user.getXp() == null ? 0 : user.getXp();
         int level = calculateLevel(totalXp);
+        Role role = user.getRole() == null ? Role.USER : user.getRole();
 
         return UserResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .role(role)
                 .xp(totalXp)
                 .level(level)
                 .currentLevelXp(getCurrentLevelXp(level))

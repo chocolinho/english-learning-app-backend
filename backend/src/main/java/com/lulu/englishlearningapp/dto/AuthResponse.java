@@ -1,5 +1,6 @@
 package com.lulu.englishlearningapp.dto;
 
+import com.lulu.englishlearningapp.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,8 @@ public class AuthResponse {
 
     private String username;
 
-
     private String email;
+    private Role role;
+
     private String token;
 }
