@@ -1,6 +1,8 @@
 package com.lulu.englishlearningapp.service;
 
 import com.lulu.englishlearningapp.dto.VocabularyResponse;
+import com.lulu.englishlearningapp.dto.WrongAnswerPracticeSubmitRequest;
+import com.lulu.englishlearningapp.dto.WrongAnswerPracticeSubmitResponse;
 import com.lulu.englishlearningapp.dto.WrongAnswerResponse;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.entity.Vocabulary;
@@ -17,6 +19,7 @@ import java.util.List;
 public class WrongAnswerService {
 
     private final WrongAnswerRepository wrongAnswerRepository;
+    private final VocabularyProgressService vocabularyProgressService;
 
     public void recordWrongAnswer(User user, Vocabulary vocabulary, String submittedAnswer) {
         WrongAnswer wrongAnswer = wrongAnswerRepository.findByUserAndVocabulary(user, vocabulary)
@@ -47,6 +50,44 @@ public class WrongAnswerService {
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    public List<WrongAnswerResponse> getPracticeItems(User user) {
+        return getMyWrongAnswers(user);
+    }
+
+    public WrongAnswerPracticeSubmitResponse submitPracticeAnswer(
+            User user,
+            WrongAnswerPracticeSubmitRequest request) {
+
+        WrongAnswer wrongAnswer = wrongAnswerRepository.findById(request.getWrongAnswerId())
+                .orElseThrow(() -> new RuntimeException("Wrong answer not found"));
+
+        if (!wrongAnswer.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Wrong answer does not belong to current user");
+        }
+
+        Vocabulary vocabulary = wrongAnswer.getVocabulary();
+        String submittedAnswer = request.getAnswer() == null ? "" : request.getAnswer().trim();
+        boolean correct = vocabulary.getMeaning().equalsIgnoreCase(submittedAnswer);
+
+        if (correct) {
+            wrongAnswer.setResolved(true);
+        } else {
+            wrongAnswer.setLastSubmittedAnswer(submittedAnswer);
+            wrongAnswer.setMistakeCount(wrongAnswer.getMistakeCount() + 1);
+            wrongAnswer.setLastMistakeAt(LocalDateTime.now());
+            wrongAnswer.setResolved(false);
+        }
+
+        WrongAnswer savedWrongAnswer = wrongAnswerRepository.save(wrongAnswer);
+
+        return WrongAnswerPracticeSubmitResponse.builder()
+                .correct(correct)
+                .correctAnswer(vocabulary.getMeaning())
+                .wrongAnswer(mapToResponse(savedWrongAnswer))
+                .progress(vocabularyProgressService.recordAnswer(user, vocabulary, correct))
+                .build();
     }
 
     public void resolveWrongAnswer(Long id, User user) {

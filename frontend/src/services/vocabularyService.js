@@ -44,3 +44,15 @@ export const getVocabulariesByTopic = async (topicId) => {
     const response = await axiosClient.get(`/api/vocabularies/topic/${topicId}`);
     return response.data;
 };
+
+export const getVocabularyProgress = async () => {
+    const response = await axiosClient.get("/api/vocabularies/progress");
+    return response.data;
+};
+
+export const updateVocabularyProgress = async (vocabularyId, status = "LEARNING") => {
+    const response = await axiosClient.put(`/api/vocabularies/progress/${vocabularyId}`, {
+        status,
+    });
+    return response.data;
+};

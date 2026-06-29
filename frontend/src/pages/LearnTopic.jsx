@@ -12,7 +12,11 @@ import {
     Sparkles,
     Volume2,
 } from "lucide-react";
-import { getVocabulariesByTopic } from "../services/vocabularyService";
+import {
+    getVocabulariesByTopic,
+    getVocabularyProgress,
+    updateVocabularyProgress,
+} from "../services/vocabularyService";
 import { addFavoriteVocabulary } from "../services/favoriteService";
 
 function LearnTopic() {
@@ -24,6 +28,7 @@ function LearnTopic() {
     const [completed, setCompleted] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [favoriteMessage, setFavoriteMessage] = useState("");
+    const [progressByVocabularyId, setProgressByVocabularyId] = useState({});
 
     useEffect(() => {
         const fetchVocabularies = async () => {
@@ -31,8 +36,19 @@ function LearnTopic() {
                 setLoading(true);
                 setErrorMessage("");
 
-                const data = await getVocabulariesByTopic(topicId);
+                const [data, progressData] = await Promise.all([
+                    getVocabulariesByTopic(topicId),
+                    getVocabularyProgress(),
+                ]);
                 setVocabularies(data);
+                setProgressByVocabularyId(
+                    Object.fromEntries(
+                        progressData.map((item) => [
+                            Number(item.vocabulary.id),
+                            item,
+                        ])
+                    )
+                );
                 setCurrentIndex(0);
                 setIsFlipped(false);
                 setCompleted(false);
@@ -48,6 +64,9 @@ function LearnTopic() {
     }, [topicId]);
 
     const currentVocabulary = vocabularies[currentIndex];
+    const currentProgress = currentVocabulary
+        ? progressByVocabularyId[Number(currentVocabulary.id)]
+        : null;
 
     const progress = useMemo(
         () =>
@@ -58,6 +77,19 @@ function LearnTopic() {
     );
 
     const handleNext = () => {
+        if (currentVocabulary?.id) {
+            updateVocabularyProgress(currentVocabulary.id, "LEARNING")
+                .then((progress) =>
+                    setProgressByVocabularyId((current) => ({
+                        ...current,
+                        [Number(currentVocabulary.id)]: progress,
+                    }))
+                )
+                .catch((error) =>
+                    console.error("Failed to update vocabulary progress", error)
+                );
+        }
+
         if (currentIndex === vocabularies.length - 1) {
             setCompleted(true);
             return;
@@ -253,7 +285,7 @@ function LearnTopic() {
                     >
                         <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-black text-[#58CC02]">
                             <Sparkles className="h-4 w-4" />
-                            Tap to flip
+                            {currentProgress?.status || "NEW"} · Tap to flip
                         </div>
 
                         <h1 className="max-w-full break-words text-5xl font-black text-slate-900 md:text-7xl">

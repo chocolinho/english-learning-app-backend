@@ -1,5 +1,7 @@
 package com.lulu.englishlearningapp.controller;
 
+import com.lulu.englishlearningapp.dto.WrongAnswerPracticeSubmitRequest;
+import com.lulu.englishlearningapp.dto.WrongAnswerPracticeSubmitResponse;
 import com.lulu.englishlearningapp.dto.WrongAnswerResponse;
 import com.lulu.englishlearningapp.entity.User;
 import com.lulu.englishlearningapp.service.WrongAnswerService;
@@ -20,6 +22,21 @@ public class WrongAnswerController {
     public List<WrongAnswerResponse> getMyWrongAnswers(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return wrongAnswerService.getMyWrongAnswers(user);
+    }
+
+    @GetMapping("/practice")
+    public List<WrongAnswerResponse> getPracticeItems(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return wrongAnswerService.getPracticeItems(user);
+    }
+
+    @PostMapping("/practice/submit")
+    public WrongAnswerPracticeSubmitResponse submitPracticeAnswer(
+            Authentication authentication,
+            @RequestBody WrongAnswerPracticeSubmitRequest request) {
+
+        User user = (User) authentication.getPrincipal();
+        return wrongAnswerService.submitPracticeAnswer(user, request);
     }
 
     @PutMapping("/{id}/resolve")

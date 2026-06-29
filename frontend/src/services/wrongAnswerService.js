@@ -8,3 +8,13 @@ export const getMyWrongAnswers = async () => {
 export const resolveWrongAnswer = async (id) => {
     await axiosClient.put(`/api/wrong-answers/${id}/resolve`);
 };
+
+export const getWrongAnswerPracticeItems = async () => {
+    const response = await axiosClient.get("/api/wrong-answers/practice");
+    return response.data;
+};
+
+export const submitWrongAnswerPractice = async (payload) => {
+    const response = await axiosClient.post("/api/wrong-answers/practice/submit", payload);
+    return response.data;
+};

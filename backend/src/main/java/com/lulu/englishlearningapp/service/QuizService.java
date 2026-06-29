@@ -27,6 +27,7 @@ public class QuizService {
     private final TopicService topicService;
     private final WrongAnswerService wrongAnswerService;
     private final AchievementService achievementService;
+    private final VocabularyProgressService vocabularyProgressService;
 
     public QuizSubmitResponse submitQuiz(
             QuizSubmitRequest request,
@@ -47,7 +48,11 @@ public class QuizService {
                 throw new RuntimeException("Vocabulary does not belong to selected topic");
             }
 
-            if (vocabulary.getMeaning().equalsIgnoreCase(answerRequest.getAnswer().trim())) {
+            boolean correct = vocabulary.getMeaning().equalsIgnoreCase(answerRequest.getAnswer().trim());
+
+            vocabularyProgressService.recordAnswer(user, vocabulary, correct);
+
+            if (correct) {
                 correctAnswers++;
                 wrongAnswerService.markResolved(user, vocabulary);
             } else {
