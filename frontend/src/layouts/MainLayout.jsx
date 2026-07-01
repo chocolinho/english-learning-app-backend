@@ -48,6 +48,7 @@ function MainLayout() {
         { to: "/achievements", label: "Badges", icon: Flame },
         { to: "/review", label: "Review", icon: Sparkles },
         { to: "/favorites", label: "Favorites", icon: Heart },
+        { to: "/ai/questions", label: "AI Lab", icon: Sparkles },
         { to: "/premium", label: "Premium", icon: Crown },
         { to: "/payments", label: "Payments", icon: Receipt },
         { to: "/profile", label: "Profile", icon: UserRound },
