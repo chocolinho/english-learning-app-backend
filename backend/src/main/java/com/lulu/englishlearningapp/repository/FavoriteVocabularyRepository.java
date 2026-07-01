@@ -16,5 +16,7 @@ public interface FavoriteVocabularyRepository extends JpaRepository<FavoriteVoca
 
     boolean existsByUserAndVocabulary(User user, Vocabulary vocabulary);
 
+    long countByUser(User user);
+
     void deleteByUserAndVocabulary(User user, Vocabulary vocabulary);
 }

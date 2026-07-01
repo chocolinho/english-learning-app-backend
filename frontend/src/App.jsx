@@ -23,9 +23,11 @@ const Favorites = lazy(() => import("./pages/Favorites"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Premium = lazy(() => import("./pages/Premium"));
 const PaymentHistory = lazy(() => import("./pages/PaymentHistory"));
-const AiQuestionGenerator = lazy(() => import("./pages/AiQuestionGenerator"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Ranking = lazy(() => import("./pages/Ranking"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminTopics = lazy(() => import("./pages/admin/AdminTopics"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
 
 function App() {
     return (
@@ -44,6 +46,7 @@ function App() {
                     >
                         <Route path="/admin/dashboard" element={<AdminDashboard />} />
                         <Route path="/admin/topics" element={<AdminTopics />} />
+                        <Route path="/admin/analytics" element={<AdminAnalytics />} />
                     </Route>
                     <Route
                         element={
@@ -65,7 +68,8 @@ function App() {
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/premium" element={<Premium />} />
                         <Route path="/payments" element={<PaymentHistory />} />
-                        <Route path="/ai/questions" element={<AiQuestionGenerator />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/ranking" element={<Ranking />} />
                     </Route>
                 </Routes>
             </Suspense>

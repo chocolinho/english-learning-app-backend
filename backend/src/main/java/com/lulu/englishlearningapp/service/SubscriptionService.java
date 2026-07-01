@@ -60,18 +60,8 @@ public class SubscriptionService {
         return isAdmin(user) || isPremium(user);
     }
 
-    public boolean canUseAiFeature(User user) {
-        return hasPremiumPrivileges(user);
-    }
-
     public boolean canExportVocabulary(User user) {
         return hasPremiumPrivileges(user);
-    }
-
-    public void enforceCanUseAiFeature(User user) {
-        if (!canUseAiFeature(user)) {
-            throw new FeatureLockedException("AI features require Premium.");
-        }
     }
 
     public void enforceCanExportVocabulary(User user) {

@@ -16,9 +16,12 @@ import {
     UserRound,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
+import PreferenceControls from "../components/PreferenceControls";
 
 function MainLayout() {
     const { logout, user, loadingUser, isPremium } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const displayName = user?.username || user?.email || "Learner";
@@ -27,7 +30,7 @@ function MainLayout() {
     const levelProgress = Math.min(user?.levelProgress ?? 0, 100);
     const nextLevelXp = user?.nextLevelXp ?? 100;
     const isAdmin = user?.role === "ADMIN";
-    const planLabel = isPremium ? "Premium" : "Free";
+    const planLabel = isPremium ? t("premiumPlan") : t("freePlan");
 
     const handleLogout = () => {
         logout();
@@ -35,25 +38,26 @@ function MainLayout() {
     };
 
     const navItems = [
-        { to: "/dashboard", label: "Dashboard", icon: Home },
-        { to: "/learn", label: "Learn", icon: GraduationCap },
-        { to: "/quiz", label: "Quiz", icon: Target },
-        { to: "/quiz-results", label: "Results", icon: Trophy },
+        { to: "/dashboard", label: t("dashboard"), icon: Home },
+        { to: "/learn", label: t("learn"), icon: GraduationCap },
+        { to: "/quiz", label: t("quiz"), icon: Target },
+        { to: "/ranking", label: t("ranking"), icon: Trophy },
     ];
 
     const secondaryNavItems = [
         ...(isAdmin
-            ? [{ to: "/admin/dashboard", label: "Admin", icon: ShieldCheck }]
+            ? [{ to: "/admin/dashboard", label: t("admin"), icon: ShieldCheck }]
             : []),
-        { to: "/achievements", label: "Badges", icon: Flame },
-        { to: "/review", label: "Review", icon: Sparkles },
-        { to: "/favorites", label: "Favorites", icon: Heart },
-        { to: "/ai/questions", label: "AI Lab", icon: Sparkles },
-        { to: "/premium", label: "Premium", icon: Crown },
-        { to: "/payments", label: "Payments", icon: Receipt },
-        { to: "/profile", label: "Profile", icon: UserRound },
-        { to: "/topics", label: "Topics", icon: BookOpen },
-        { to: "/vocabularies", label: "Words", icon: Brain },
+        { to: "/analytics", label: t("analytics"), icon: Sparkles },
+        { to: "/achievements", label: t("badges"), icon: Flame },
+        { to: "/review", label: t("review"), icon: Sparkles },
+        { to: "/quiz-results", label: t("results"), icon: Trophy },
+        { to: "/favorites", label: t("favorites"), icon: Heart },
+        { to: "/premium", label: t("premium"), icon: Crown },
+        { to: "/payments", label: t("payments"), icon: Receipt },
+        { to: "/profile", label: t("profile"), icon: UserRound },
+        { to: "/topics", label: t("topics"), icon: BookOpen },
+        { to: "/vocabularies", label: t("words"), icon: Brain },
     ];
 
     const navLinkClass = ({ isActive }) =>
@@ -75,10 +79,14 @@ function MainLayout() {
                         <h1 className="text-2xl font-black text-slate-900">
                             LinguaKid
                         </h1>
-                        <p className="text-xs font-bold text-slate-400">
-                            English Learning
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                            {t("englishLearning")}
                         </p>
                     </div>
+                </div>
+
+                <div className="mb-5">
+                    <PreferenceControls />
                 </div>
 
                 <div className="mb-7 rounded-[1.75rem] border border-slate-100 bg-slate-50 p-4">
@@ -89,7 +97,7 @@ function MainLayout() {
 
                         <div className="min-w-0">
                             <p className="truncate text-sm font-black text-slate-800">
-                                {loadingUser ? "Loading..." : displayName}
+                                {loadingUser ? t("loading") : displayName}
                             </p>
                             <p className="text-xs font-bold text-slate-400">
                                 Level {level} - {totalXp} XP
@@ -105,7 +113,7 @@ function MainLayout() {
                         }`}
                     >
                         <Crown className="h-4 w-4" />
-                        {planLabel} Plan
+                            {planLabel}
                     </div>
 
                     <div className="mt-4 h-3 overflow-hidden rounded-full bg-white">
@@ -138,7 +146,7 @@ function MainLayout() {
 
                     <div className="pt-4">
                         <p className="px-4 pb-2 text-xs font-black uppercase text-slate-400">
-                            More
+                            {t("more")}
                         </p>
                         <div className="space-y-2">
                             {secondaryNavItems.map((item) => {
@@ -165,7 +173,7 @@ function MainLayout() {
                     className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-black text-red-500 transition-all hover:bg-red-50"
                 >
                     <LogOut className="h-5 w-5" />
-                    Logout
+                    {t("logout")}
                 </button>
             </aside>
 
@@ -180,20 +188,23 @@ function MainLayout() {
                             <h1 className="truncate text-lg font-black text-slate-900">
                                 LinguaKid
                             </h1>
-                            <p className="truncate text-xs font-bold text-slate-400">
+                            <p className="truncate text-xs font-bold text-slate-400 dark:text-slate-500">
                                 {displayName} - Level {level} - {planLabel}
                             </p>
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="rounded-2xl bg-red-50 p-3 text-red-500"
-                        aria-label="Logout"
-                    >
-                        <LogOut className="h-5 w-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <PreferenceControls compact />
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="rounded-2xl bg-red-50 p-3 text-red-500 dark:bg-red-950/40"
+                            aria-label={t("logout")}
+                        >
+                            <LogOut className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="mt-3 flex items-center gap-2">

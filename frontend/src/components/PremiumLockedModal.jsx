@@ -44,7 +44,7 @@ function PremiumLockedModal({ open, title, description, onClose }) {
                     <ul className="mt-3 space-y-2 text-sm font-bold text-slate-600">
                         <li>Longer quizzes with 10, 20, 30+ questions</li>
                         <li>Premium topics and advanced review tools</li>
-                        <li>AI features and vocabulary export access</li>
+                        <li>Ranking insights and vocabulary export access</li>
                     </ul>
                 </div>
 

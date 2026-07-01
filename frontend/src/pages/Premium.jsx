@@ -36,7 +36,7 @@ const plans = [
 const premiumFeatures = [
     { icon: Lock, title: "Premium Topics", text: "Access approved premium lessons." },
     { icon: Zap, title: "Longer Quizzes", text: "Practice with 10, 20, 30+ questions." },
-    { icon: Sparkles, title: "AI Ready", text: "Unlock future AI question and explanation tools." },
+    { icon: Sparkles, title: "Smart Practice", text: "Unlock richer practice modes and progress insights." },
     { icon: BarChart3, title: "Advanced Analytics", text: "Prepared for deeper progress insights." },
     { icon: Download, title: "Vocabulary Export", text: "Premium gate ready for export features." },
     { icon: Trophy, title: "Unlimited Growth", text: "Create more custom topics and vocabulary." },
@@ -86,7 +86,7 @@ function Premium() {
                         </h1>
                         <p className="mt-3 max-w-2xl font-semibold text-slate-700">
                             Premium opens advanced practice, premium topics, longer quizzes,
-                            and future AI tools for serious English learning.
+                            and deeper progress tools for serious English learning.
                         </p>
                     </div>
 

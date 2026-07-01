@@ -13,4 +13,6 @@ public interface WrongAnswerRepository extends JpaRepository<WrongAnswer, Long> 
     List<WrongAnswer> findByUserAndResolvedFalseOrderByLastMistakeAtDesc(User user);
 
     Optional<WrongAnswer> findByUserAndVocabulary(User user, Vocabulary vocabulary);
+
+    long countByUserAndResolvedTrue(User user);
 }

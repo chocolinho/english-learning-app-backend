@@ -5,6 +5,11 @@ export const getAdminStats = async () => {
     return response.data;
 };
 
+export const getAdminAnalytics = async () => {
+    const response = await axiosClient.get("/api/admin/analytics");
+    return response.data;
+};
+
 export const getAdminTopics = async () => {
     const response = await axiosClient.get("/api/admin/topics");
     return response.data;

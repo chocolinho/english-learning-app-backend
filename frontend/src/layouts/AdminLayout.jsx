@@ -9,9 +9,12 @@ import {
     UserRound,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import PreferenceControls from "../components/PreferenceControls";
+import { useLanguage } from "../context/LanguageContext";
 
 function AdminLayout() {
     const { logout, user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -43,6 +46,10 @@ function AdminLayout() {
                     </div>
                 </div>
 
+                <div className="mb-5">
+                    <PreferenceControls />
+                </div>
+
                 <div className="mb-7 rounded-[1.75rem] border border-slate-100 bg-slate-50 p-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#1CB0F6] shadow-sm">
@@ -62,11 +69,15 @@ function AdminLayout() {
                 <nav className="flex-1 space-y-2" aria-label="Admin navigation">
                     <NavLink to="/admin/dashboard" className={navLinkClass}>
                         <LayoutDashboard className="h-5 w-5" />
-                        Dashboard
+                        {t("dashboard")}
+                    </NavLink>
+                    <NavLink to="/admin/analytics" className={navLinkClass}>
+                        <BarChart3 className="h-5 w-5" />
+                        {t("analytics")}
                     </NavLink>
                     <NavLink to="/admin/topics" className={navLinkClass}>
                         <BookOpen className="h-5 w-5" />
-                        Topics
+                        {t("topics")}
                     </NavLink>
                     <NavLink to="/dashboard" className={navLinkClass}>
                         <Home className="h-5 w-5" />
@@ -80,7 +91,7 @@ function AdminLayout() {
                     className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-black text-red-500 transition-all hover:bg-red-50"
                 >
                     <LogOut className="h-5 w-5" />
-                    Logout
+                    {t("logout")}
                 </button>
             </aside>
 
@@ -99,17 +110,20 @@ function AdminLayout() {
                             </p>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="rounded-2xl bg-red-50 p-3 text-red-500"
-                        aria-label="Logout"
-                    >
-                        <LogOut className="h-5 w-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <PreferenceControls compact />
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="rounded-2xl bg-red-50 p-3 text-red-500 dark:bg-red-950/40"
+                            aria-label={t("logout")}
+                        >
+                            <LogOut className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
-                <nav className="mt-3 grid grid-cols-3 gap-2" aria-label="Mobile admin navigation">
+                <nav className="mt-3 grid grid-cols-4 gap-2" aria-label="Mobile admin navigation">
                     <NavLink
                         to="/admin/dashboard"
                         className={({ isActive }) =>
@@ -121,7 +135,27 @@ function AdminLayout() {
                         }
                     >
                         <BarChart3 className="h-4 w-4" />
-                        Admin
+                        {t("admin")}
+                    </NavLink>
+                    <NavLink
+                        to="/admin/analytics"
+                        className={({ isActive }) =>
+                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-black ${
+                                isActive
+                                    ? "bg-sky-50 text-[#1CB0F6]"
+                                    : "bg-slate-50 text-slate-500"
+                            }`
+                        }
+                    >
+                        <BarChart3 className="h-4 w-4" />
+                        {t("analytics")}
+                    </NavLink>
+                    <NavLink
+                        to="/dashboard"
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-black text-slate-500"
+                    >
+                        <Home className="h-4 w-4" />
+                        App
                     </NavLink>
                     <NavLink
                         to="/admin/topics"
@@ -134,14 +168,7 @@ function AdminLayout() {
                         }
                     >
                         <BookOpen className="h-4 w-4" />
-                        Topics
-                    </NavLink>
-                    <NavLink
-                        to="/dashboard"
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-black text-slate-500"
-                    >
-                        <BookOpen className="h-4 w-4" />
-                        User App
+                        {t("topics")}
                     </NavLink>
                 </nav>
             </header>

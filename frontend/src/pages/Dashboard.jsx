@@ -290,8 +290,8 @@ function Dashboard() {
                             </h2>
                             <p className="mt-2 max-w-3xl font-semibold text-slate-500">
                                 {isPremium
-                                    ? "You can access premium topics, longer quizzes, AI features, and export tools."
-                                    : "Premium unlocks longer quizzes, premium topics, AI features, and vocabulary export."}
+                                    ? "You can access premium topics, longer quizzes, ranking insights, and export tools."
+                                    : "Premium unlocks longer quizzes, premium topics, ranking insights, and vocabulary export."}
                             </p>
                         </div>
                     </div>
