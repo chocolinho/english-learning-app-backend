@@ -99,36 +99,36 @@ function Profile() {
 
     return (
         <div className="mx-auto max-w-6xl space-y-6">
-            <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#58CC02] via-[#1CB0F6] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 md:p-8">
+            <section className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-7">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-sm font-bold text-[#58CC02] dark:bg-green-950">
                             <UserRound className="h-4 w-4" />
                             Learner profile
                         </div>
-                        <h1 className="break-words text-3xl font-black md:text-5xl">
+                        <h1 className="break-words text-3xl font-bold tracking-tight text-slate-950 dark:text-white md:text-4xl">
                             {user?.username || "Learner"}
                         </h1>
-                        <p className="mt-3 max-w-xl font-semibold text-white/90">
+                        <p className="mt-3 max-w-xl text-base font-medium leading-7 text-slate-500 dark:text-slate-400">
                             Manage your account, track progress, and keep your
                             learning streak alive.
                         </p>
                     </div>
 
-                    <div className="rounded-[1.75rem] bg-white/20 p-5 backdrop-blur lg:min-w-80">
+                    <div className="rounded-[1.25rem] bg-slate-50 p-5 lg:min-w-80 dark:bg-slate-950">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-black text-white/75">
+                                <p className="text-sm font-bold text-slate-400">
                                     Level {level}
                                 </p>
-                                <p className="text-4xl font-black">{totalXp} XP</p>
+                                <p className="text-4xl font-bold text-slate-950 dark:text-white">{totalXp} XP</p>
                             </div>
-                            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-yellow-500">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-yellow-500 dark:bg-slate-900">
                                 <Trophy className="h-9 w-9" />
                             </div>
                         </div>
                         <div
-                            className="mt-5 h-4 overflow-hidden rounded-full bg-white/25"
+                            className="mt-5 h-4 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                             role="progressbar"
                             aria-label="Level progress"
                             aria-valuenow={progress}
@@ -136,11 +136,11 @@ function Profile() {
                             aria-valuemax={100}
                         >
                             <div
-                                className="h-full rounded-full bg-white transition-all duration-700"
+                                className="h-full rounded-full bg-[#58CC02] transition-all duration-700"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
-                        <p className="mt-3 text-sm font-black text-white/85">
+                        <p className="mt-3 text-sm font-bold text-slate-400">
                             {totalXp} / {nextLevelXp} XP
                         </p>
                     </div>
@@ -150,7 +150,7 @@ function Profile() {
             {(message || errorMessage) && (
                 <div
                     role="status"
-                    className={`flex items-center gap-3 rounded-3xl p-4 font-bold ${
+                    className={`flex items-center gap-3 rounded-2xl p-4 font-semibold ${
                         message
                             ? "bg-green-50 text-[#58CC02]"
                             : "bg-red-50 text-red-500"
@@ -205,13 +205,13 @@ function Profile() {
                             <Crown className="h-7 w-7" />
                         </div>
                         <div>
-                            <p className="text-sm font-black text-slate-400">
+                            <p className="text-sm font-bold text-slate-400">
                                 Current Plan
                             </p>
-                            <h2 className="text-2xl font-black text-slate-900">
+                            <h2 className="text-2xl font-bold text-slate-950">
                                 {isPremium ? "Premium" : "Free"} Plan
                             </h2>
-                            <p className="mt-2 font-semibold text-slate-500">
+                            <p className="mt-2 font-medium text-slate-500">
                                 Status: {subscriptionStatus}
                                 {premiumUntil ? ` - valid until ${premiumUntil}` : ""}
                             </p>
@@ -221,7 +221,7 @@ function Profile() {
                     {!isPremium && (
                         <Link
                             to="/premium"
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-bold text-slate-950 shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                         >
                             <Crown className="h-5 w-5" />
                             Upgrade to Premium
@@ -233,18 +233,18 @@ function Profile() {
             <div className="grid gap-5 lg:grid-cols-2">
                 <form
                     onSubmit={handleProfileSubmit}
-                    className="rounded-[1.75rem] border border-slate-100 bg-white p-6 shadow-sm"
+                    className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 className="text-2xl font-black text-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         Account
                     </h2>
-                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
                         Email is used for login and stays unchanged.
                     </p>
 
                     <label
                         htmlFor="profile-username"
-                        className="mt-5 block text-sm font-black text-slate-600"
+                        className="mt-5 block text-sm font-bold text-slate-600 dark:text-slate-300"
                     >
                         Username
                     </label>
@@ -255,13 +255,13 @@ function Profile() {
                             value={username}
                             autoComplete="username"
                             onChange={(event) => setUsername(event.target.value)}
-                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 font-semibold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         />
                     </div>
 
                     <label
                         htmlFor="profile-email"
-                        className="mt-4 block text-sm font-black text-slate-600"
+                        className="mt-4 block text-sm font-bold text-slate-600 dark:text-slate-300"
                     >
                         Email
                     </label>
@@ -271,14 +271,14 @@ function Profile() {
                             id="profile-email"
                             value={user?.email || ""}
                             disabled
-                            className="w-full rounded-2xl border border-slate-200 bg-slate-100 py-4 pl-12 pr-4 font-bold text-slate-400"
+                            className="w-full rounded-2xl border border-slate-200 bg-slate-100 py-4 pl-12 pr-4 font-semibold text-slate-400 dark:border-slate-800 dark:bg-slate-800"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={savingProfile}
-                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-6 py-4 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-6 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                         <Save className="h-5 w-5" />
                         {savingProfile ? "Saving..." : "Save Profile"}
@@ -287,18 +287,18 @@ function Profile() {
 
                 <form
                     onSubmit={handlePasswordSubmit}
-                    className="rounded-[1.75rem] border border-slate-100 bg-white p-6 shadow-sm"
+                    className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 className="text-2xl font-black text-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         Password
                     </h2>
-                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
                         Keep your learning account secure.
                     </p>
 
                     <label
                         htmlFor="current-password"
-                        className="mt-5 block text-sm font-black text-slate-600"
+                        className="mt-5 block text-sm font-bold text-slate-600 dark:text-slate-300"
                     >
                         Current Password
                     </label>
@@ -316,7 +316,7 @@ function Profile() {
 
                     <label
                         htmlFor="new-password"
-                        className="mt-4 block text-sm font-black text-slate-600"
+                        className="mt-4 block text-sm font-bold text-slate-600 dark:text-slate-300"
                     >
                         New Password
                     </label>
@@ -335,7 +335,7 @@ function Profile() {
                     <button
                         type="submit"
                         disabled={savingPassword}
-                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-6 py-4 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-6 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                         <Lock className="h-5 w-5" />
                         {savingPassword ? "Changing..." : "Change Password"}
@@ -348,12 +348,12 @@ function Profile() {
 
 function ProfileStat({ icon, label, value, color }) {
     return (
-        <div className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
             <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl ${color}`}>
                 {icon}
             </div>
-            <p className="text-3xl font-black text-slate-900">{value}</p>
-            <p className="text-sm font-black text-slate-400">{label}</p>
+            <p className="text-3xl font-bold text-slate-950 dark:text-white">{value}</p>
+            <p className="text-sm font-semibold text-slate-400">{label}</p>
         </div>
     );
 }
@@ -368,7 +368,7 @@ function PasswordInput({ id, value, autoComplete, onChange }) {
                 value={value}
                 autoComplete={autoComplete}
                 onChange={(event) => onChange(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 font-semibold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
             />
         </div>
     );

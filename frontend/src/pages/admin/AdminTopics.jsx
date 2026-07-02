@@ -93,17 +93,17 @@ function AdminTopics() {
 
     return (
         <div className="mx-auto max-w-7xl space-y-6">
-            <section className="rounded-[2rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 md:p-8">
+            <section className="rounded-[1.75rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 dark:shadow-none md:p-8">
                 <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold">
                             <ShieldCheck className="h-4 w-4" />
                             Content control
                         </div>
-                        <h1 className="text-3xl font-black md:text-5xl">
+                        <h1 className="text-3xl font-bold md:text-5xl">
                             Topic Management
                         </h1>
-                        <p className="mt-3 max-w-2xl font-semibold text-white/90">
+                        <p className="mt-3 max-w-2xl font-medium text-white/90">
                             Review public topics and control free or premium access.
                         </p>
                     </div>
@@ -111,7 +111,7 @@ function AdminTopics() {
                     <button
                         type="button"
                         onClick={fetchTopics}
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-black text-[#1CB0F6] shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-white/40"
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-[#1CB0F6] shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-white/40"
                     >
                         <RefreshCcw className="h-5 w-5" />
                         Refresh
@@ -122,7 +122,7 @@ function AdminTopics() {
             {(errorMessage || successMessage) && (
                 <div
                     role="status"
-                    className={`rounded-3xl p-4 font-bold ${
+                    className={`rounded-2xl p-4 font-semibold ${
                         errorMessage
                             ? "bg-red-50 text-red-500"
                             : "bg-green-50 text-[#58CC02]"
@@ -159,23 +159,23 @@ function AdminTopics() {
                 />
             </section>
 
-            <section className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+            <section className="rounded-[1.5rem] border border-sky-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h2 className="text-2xl font-black text-slate-900">
+                        <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                             Topic Queue
                         </h2>
-                        <p className="mt-1 font-semibold text-slate-500">
+                        <p className="mt-1 font-medium text-slate-500 dark:text-slate-400">
                             Approve, reject, or switch topics between Free and Premium.
                         </p>
                     </div>
 
-                    <label className="flex items-center gap-3 text-sm font-black text-slate-500">
+                    <label className="flex items-center gap-3 text-sm font-bold text-slate-500 dark:text-slate-400">
                         Status
                         <select
                             value={statusFilter}
                             onChange={(event) => setStatusFilter(event.target.value)}
-                            className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold text-slate-700 outline-none transition-all focus:border-[#1CB0F6] focus:ring-4 focus:ring-sky-100"
+                            className="min-h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 font-semibold text-slate-700 outline-none transition-all focus:border-[#1CB0F6] focus:ring-4 focus:ring-sky-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         >
                             {statusOptions.map((status) => (
                                 <option key={status} value={status}>
@@ -187,16 +187,16 @@ function AdminTopics() {
                 </div>
 
                 {filteredTopics.length === 0 ? (
-                    <div className="mt-6 rounded-3xl bg-slate-50 p-8 text-center">
+                    <div className="mt-6 rounded-2xl bg-slate-50 p-8 text-center dark:bg-slate-950">
                         <BookOpen className="mx-auto mb-4 h-12 w-12 text-slate-300" />
-                        <p className="font-black text-slate-500">
+                        <p className="font-bold text-slate-500 dark:text-slate-400">
                             No topics match this filter.
                         </p>
                     </div>
                 ) : (
                     <div className="mt-6 overflow-x-auto">
                         <table className="w-full min-w-[980px]">
-                            <thead className="bg-slate-50">
+                            <thead className="bg-sky-50 dark:bg-slate-950">
                                 <tr>
                                     <TableHeader>Topic</TableHeader>
                                     <TableHeader>Owner</TableHeader>
@@ -215,20 +215,20 @@ function AdminTopics() {
                                     return (
                                         <tr
                                             key={topic.id}
-                                            className="border-t border-slate-100"
+                                            className="border-t border-slate-100 dark:border-slate-800"
                                         >
                                             <td className="p-4">
-                                                <p className="font-black text-slate-900">
+                                                <p className="font-bold text-slate-950 dark:text-white">
                                                     {topic.name}
                                                 </p>
-                                                <p className="mt-1 line-clamp-2 text-sm font-semibold text-slate-500">
+                                                <p className="mt-1 line-clamp-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                                     {topic.description || "No description"}
                                                 </p>
                                             </td>
                                             <td className="p-4 font-bold text-slate-600">
                                                 {topic.ownerUsername || "Platform"}
                                             </td>
-                                            <td className="p-4 font-black text-slate-700">
+                                            <td className="p-4 font-bold text-slate-700 dark:text-slate-200">
                                                 {topic.vocabularyCount ?? 0}
                                             </td>
                                             <td className="p-4">
@@ -269,7 +269,7 @@ function AdminTopics() {
                                                                 "Topic is now Free."
                                                             )
                                                         }
-                                                        className="rounded-xl bg-green-50 px-3 py-2 text-sm font-black text-[#58CC02] transition-all hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="rounded-xl bg-green-50 px-3 py-2 text-sm font-bold text-[#58CC02] transition-all hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-green-950"
                                                     >
                                                         Free
                                                     </button>
@@ -287,7 +287,7 @@ function AdminTopics() {
                                                                 "Topic is now Premium."
                                                             )
                                                         }
-                                                        className="rounded-xl bg-yellow-100 px-3 py-2 text-sm font-black text-yellow-700 transition-all hover:bg-yellow-200 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="rounded-xl bg-yellow-100 px-3 py-2 text-sm font-bold text-yellow-700 transition-all hover:bg-yellow-200 disabled:cursor-not-allowed disabled:opacity-40"
                                                     >
                                                         Premium
                                                     </button>
@@ -304,7 +304,7 @@ function AdminTopics() {
                                                                 "Topic approved."
                                                             )
                                                         }
-                                                        className="inline-flex items-center gap-1 rounded-xl bg-sky-50 px-3 py-2 text-sm font-black text-[#1CB0F6] transition-all hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="inline-flex items-center gap-1 rounded-xl bg-sky-50 px-3 py-2 text-sm font-bold text-[#1CB0F6] transition-all hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-sky-950"
                                                     >
                                                         <CheckCircle2 className="h-4 w-4" />
                                                         Approve
@@ -322,7 +322,7 @@ function AdminTopics() {
                                                                 "Topic rejected."
                                                             )
                                                         }
-                                                        className="inline-flex items-center gap-1 rounded-xl bg-red-50 px-3 py-2 text-sm font-black text-red-500 transition-all hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="inline-flex items-center gap-1 rounded-xl bg-red-50 px-3 py-2 text-sm font-bold text-red-500 transition-all hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-red-950/40"
                                                     >
                                                         <XCircle className="h-4 w-4" />
                                                         Reject
@@ -343,12 +343,12 @@ function AdminTopics() {
 
 function AdminTopicStat({ icon, label, value, color }) {
     return (
-        <article className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+        <article className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
             <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${color}`}>
                 {icon}
             </div>
-            <p className="text-sm font-black text-slate-400">{label}</p>
-            <p className="mt-1 text-4xl font-black text-slate-900">{value}</p>
+            <p className="text-sm font-semibold text-slate-400">{label}</p>
+            <p className="mt-1 text-4xl font-bold text-slate-950 dark:text-white">{value}</p>
         </article>
     );
 }
@@ -356,7 +356,7 @@ function AdminTopicStat({ icon, label, value, color }) {
 function TableHeader({ children, align = "left" }) {
     return (
         <th
-            className={`p-4 text-sm font-black text-slate-500 ${
+            className={`p-4 text-sm font-bold text-slate-500 dark:text-slate-400 ${
                 align === "right" ? "text-right" : "text-left"
             }`}
         >
@@ -375,7 +375,7 @@ function Badge({ label, tone }) {
     };
 
     return (
-        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${classes[tone] || classes.slate}`}>
+        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${classes[tone] || classes.slate}`}>
             {label}
         </span>
     );

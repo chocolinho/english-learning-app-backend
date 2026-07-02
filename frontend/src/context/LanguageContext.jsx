@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 const LanguageContext = createContext();
 
@@ -80,25 +80,12 @@ const translations = {
 };
 
 export function LanguageProvider({ children }) {
-    const [language, setLanguage] = useState(
-        () => localStorage.getItem("language") || "en"
-    );
-
     const value = useMemo(
         () => ({
-            language,
-            setLanguage: (nextLanguage) => {
-                localStorage.setItem("language", nextLanguage);
-                setLanguage(nextLanguage);
-            },
-            toggleLanguage: () => {
-                const nextLanguage = language === "en" ? "vi" : "en";
-                localStorage.setItem("language", nextLanguage);
-                setLanguage(nextLanguage);
-            },
-            t: (key) => translations[language]?.[key] || translations.en[key] || key,
+            language: "en",
+            t: (key) => translations.en[key] || key,
         }),
-        [language]
+        []
     );
 
     return (

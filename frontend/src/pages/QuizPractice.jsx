@@ -240,12 +240,12 @@ function QuizPractice() {
     }
 
     const renderTopicSelector = () => (
-        <div className="mb-5 rounded-[1.75rem] border border-slate-100 bg-white p-4 shadow-sm">
+        <div className="mb-5 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="grid gap-4 lg:grid-cols-[1fr_220px_auto] lg:items-end">
                 <div>
                     <label
                         htmlFor="quiz-topic"
-                        className="mb-2 block text-sm font-black text-slate-500"
+                        className="mb-2 block text-sm font-bold text-slate-500 dark:text-slate-400"
                     >
                         Quiz Topic
                     </label>
@@ -255,7 +255,7 @@ function QuizPractice() {
                         onChange={(event) =>
                             setSelectedTopicId(event.target.value)
                         }
-                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-semibold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                     >
                         <option value="">All topics</option>
                         {topics.map((topic) => (
@@ -277,7 +277,7 @@ function QuizPractice() {
                 <div>
                     <label
                         htmlFor="quiz-length"
-                        className="mb-2 block text-sm font-black text-slate-500"
+                        className="mb-2 block text-sm font-bold text-slate-500 dark:text-slate-400"
                     >
                         Quiz Length
                     </label>
@@ -294,7 +294,7 @@ function QuizPractice() {
 
                             setQuestionLimit(nextValue);
                         }}
-                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                        className="min-h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 font-semibold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                     >
                         {quizLengthOptions.map((option) => (
                             <option
@@ -312,7 +312,7 @@ function QuizPractice() {
                 <button
                     type="button"
                     onClick={loadQuestions}
-                    className="rounded-2xl bg-[#1CB0F6] px-5 py-3 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                    className="rounded-2xl bg-[#1CB0F6] px-5 py-3 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-sky-100"
                 >
                     Load Quiz
                 </button>
@@ -322,7 +322,7 @@ function QuizPractice() {
                 <button
                     type="button"
                     onClick={() => setPremiumModalOpen(true)}
-                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-yellow-100 px-4 py-3 text-sm font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                    className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-yellow-100 px-4 py-3 text-sm font-bold text-yellow-700 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                 >
                     <Lock className="h-4 w-4" />
                     Unlock 10, 20, 30-question quizzes
@@ -357,81 +357,82 @@ function QuizPractice() {
 
     if (result) {
         const levelProgress = Math.min(result.levelProgress || 0, 100);
+        const currentLevelXp = result.currentLevelXp ?? result.totalXp ?? 0;
+        const nextLevelXp = result.nextLevelXp ?? 100;
 
         return (
             <div className="mx-auto max-w-4xl">
                 {errorMessage && (
-                    <div className="mb-5 rounded-3xl bg-yellow-50 p-4 font-bold text-yellow-600">
+                    <div className="mb-5 rounded-2xl bg-yellow-50 p-4 font-semibold text-yellow-600 dark:bg-yellow-950/40">
                         {errorMessage}
                     </div>
                 )}
 
-                <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm">
-                    <div className="bg-gradient-to-br from-green-50 via-sky-50 to-yellow-50 p-7 text-center md:p-10">
-                        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-white text-[#58CC02] shadow-lg">
+                <div className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="bg-slate-50 p-7 text-center dark:bg-slate-950 md:p-10">
+                        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-white text-[#58CC02] shadow-sm dark:bg-slate-900">
                             <Trophy size={42} />
                         </div>
 
-                        <h1 className="text-3xl font-black text-slate-900 md:text-5xl">
+                        <h1 className="text-3xl font-bold text-slate-950 dark:text-white md:text-5xl">
                             Quiz Complete
                         </h1>
-                        <p className="mt-3 font-semibold text-slate-500">
+                        <p className="mt-3 font-medium text-slate-500 dark:text-slate-400">
                             {result.correctAnswers} of {result.totalQuestions}{" "}
                             answers correct
                         </p>
 
-                        <p className="mt-6 text-7xl font-black text-[#58CC02]">
+                        <p className="mt-6 text-6xl font-bold text-[#58CC02] md:text-7xl">
                             {Math.round(result.score || 0)}%
                         </p>
 
                         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            <div className="rounded-3xl bg-white p-4">
+                            <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
                                 <Star className="mx-auto h-6 w-6 text-yellow-500" />
-                                <p className="mt-2 text-2xl font-black text-yellow-500">
+                                <p className="mt-2 text-2xl font-bold text-yellow-500">
                                     +{result.earnedXp || 0}
                                 </p>
-                                <p className="text-xs font-black text-slate-400">
+                                <p className="text-xs font-bold text-slate-400">
                                     earned XP
                                 </p>
                             </div>
-                            <div className="rounded-3xl bg-white p-4">
+                            <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
                                 <Sparkles className="mx-auto h-6 w-6 text-[#1CB0F6]" />
-                                <p className="mt-2 text-2xl font-black text-[#1CB0F6]">
+                                <p className="mt-2 text-2xl font-bold text-[#1CB0F6]">
                                     {result.totalXp || 0}
                                 </p>
-                                <p className="text-xs font-black text-slate-400">
+                                <p className="text-xs font-bold text-slate-400">
                                     total XP
                                 </p>
                             </div>
-                            <div className="rounded-3xl bg-white p-4">
+                            <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
                                 <Trophy className="mx-auto h-6 w-6 text-[#CE82FF]" />
-                                <p className="mt-2 text-2xl font-black text-[#CE82FF]">
+                                <p className="mt-2 text-2xl font-bold text-[#CE82FF]">
                                     {result.level || 1}
                                 </p>
-                                <p className="text-xs font-black text-slate-400">
+                                <p className="text-xs font-bold text-slate-400">
                                     current level
                                 </p>
                             </div>
                         </div>
 
-                        <div className="mx-auto mt-6 max-w-xl rounded-3xl bg-white p-5 text-left">
+                        <div className="mx-auto mt-6 max-w-xl rounded-2xl bg-white p-5 text-left dark:bg-slate-900">
                             <div className="mb-3 flex items-center justify-between">
-                                <p className="font-black text-slate-700">
+                                <p className="font-bold text-slate-700 dark:text-slate-200">
                                     Level Progress
                                 </p>
-                                <p className="font-black text-[#58CC02]">
+                                <p className="font-bold text-[#58CC02]">
                                     {levelProgress}%
                                 </p>
                             </div>
-                            <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+                            <div className="h-4 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                                 <div
                                     className="h-full rounded-full bg-[#58CC02] transition-all duration-700"
                                     style={{ width: `${levelProgress}%` }}
                                 />
                             </div>
-                            <p className="mt-2 text-sm font-bold text-slate-400">
-                                {result.totalXp || 0} /{" "}
-                                {result.nextLevelXp || 100} XP
+                            <p className="mt-2 text-sm font-semibold text-slate-400">
+                                {currentLevelXp} / {nextLevelXp} XP
                             </p>
                         </div>
                     </div>
@@ -441,7 +442,7 @@ function QuizPractice() {
                             {answers.map((answer, index) => (
                                 <div
                                     key={`${answer.questionId}-${index}`}
-                                    className={`rounded-3xl border p-4 ${
+                                    className={`rounded-2xl border p-4 ${
                                         answer.isCorrect
                                             ? "border-green-100 bg-green-50"
                                             : "border-red-100 bg-red-50"
@@ -454,7 +455,7 @@ function QuizPractice() {
                                             <XCircle className="mt-1 h-5 w-5 shrink-0 text-red-500" />
                                         )}
                                         <div>
-                                            <p className="font-black text-slate-900">
+                                            <p className="font-bold text-slate-950">
                                                 {index + 1}. {answer.word}
                                             </p>
                                             <p className="mt-1 text-sm font-semibold text-slate-500">
@@ -462,8 +463,8 @@ function QuizPractice() {
                                                 <span
                                                     className={
                                                         answer.isCorrect
-                                                            ? "font-black text-[#58CC02]"
-                                                            : "font-black text-red-500"
+                                                            ? "font-bold text-[#58CC02]"
+                                                            : "font-bold text-red-500"
                                                     }
                                                 >
                                                     {answer.selectedAnswer}
@@ -472,7 +473,7 @@ function QuizPractice() {
                                             {!answer.isCorrect && (
                                                 <p className="text-sm font-semibold text-slate-500">
                                                     Correct answer:{" "}
-                                                    <span className="font-black text-[#58CC02]">
+                                                    <span className="font-bold text-[#58CC02]">
                                                         {answer.correctAnswer}
                                                     </span>
                                                 </p>
@@ -486,7 +487,7 @@ function QuizPractice() {
                         <button
                             type="button"
                             onClick={loadQuestions}
-                            className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-8 py-4 font-black text-white shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-100 sm:w-auto"
+                            className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1CB0F6] px-8 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-sky-100 sm:w-auto"
                         >
                             <RotateCcw size={20} />
                             Try Again
@@ -512,13 +513,13 @@ function QuizPractice() {
 
             <div className="mb-6">
                 <div className="mb-3 flex items-center justify-between">
-                    <p className="font-black text-slate-500">
+                    <p className="font-bold text-slate-500 dark:text-slate-400">
                         Question {currentIndex + 1} of {questions.length}
                     </p>
-                    <p className="font-black text-[#58CC02]">{progress}%</p>
+                    <p className="font-bold text-[#58CC02]">{progress}%</p>
                 </div>
 
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-slate-500 shadow-sm">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">
                     {isPremium ? (
                         <Crown className="h-4 w-4 text-yellow-500" />
                     ) : (
@@ -528,7 +529,7 @@ function QuizPractice() {
                 </div>
 
                 <div
-                    className="h-4 overflow-hidden rounded-full bg-slate-100"
+                    className="h-4 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                     role="progressbar"
                     aria-label="Quiz progress"
                     aria-valuenow={progress}
@@ -542,17 +543,17 @@ function QuizPractice() {
                 </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+            <div className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-8">
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm font-black text-slate-400">
+                        <p className="text-sm font-bold text-slate-400">
                             Choose the correct meaning
                         </p>
-                        <h1 className="mt-2 break-words text-4xl font-black text-slate-900 md:text-6xl">
+                        <h1 className="mt-2 break-words text-4xl font-bold text-slate-950 dark:text-white md:text-6xl">
                             {currentQuestion.word}
                         </h1>
                     </div>
-                    <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-green-100 text-[#58CC02] sm:flex">
+                    <div className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-[#58CC02] sm:flex">
                         <Target className="h-8 w-8" />
                     </div>
                 </div>
@@ -570,12 +571,12 @@ function QuizPractice() {
                                 onClick={() => handleChooseAnswer(option)}
                                 disabled={isAnswered || submitting}
                                 aria-pressed={isSelected}
-                                className={`flex items-center justify-between gap-3 rounded-3xl border-2 p-5 text-left font-black transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 ${
+                                className={`flex items-center justify-between gap-3 rounded-2xl border-2 p-5 text-left font-bold transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 ${
                                     showCorrect
                                         ? "border-[#58CC02] bg-green-50 text-[#58CC02]"
                                         : showWrong
                                           ? "border-red-400 bg-red-50 text-red-500"
-                                          : "border-slate-100 bg-slate-50 text-slate-700 hover:-translate-y-1 hover:border-[#1CB0F6] hover:bg-blue-50"
+                                          : "border-slate-200 bg-slate-50 text-slate-700 hover:-translate-y-0.5 hover:border-[#1CB0F6] hover:bg-blue-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
                                 }`}
                             >
                                 <span>{option.text}</span>
@@ -594,7 +595,7 @@ function QuizPractice() {
                     <div
                         role="status"
                         aria-live="polite"
-                        className={`mt-5 rounded-3xl p-4 font-bold ${
+                        className={`mt-5 rounded-2xl p-4 font-semibold ${
                             selectedOption.isCorrect
                                 ? "bg-green-50 text-[#58CC02]"
                                 : "bg-red-50 text-red-500"
@@ -610,7 +611,7 @@ function QuizPractice() {
                     type="button"
                     onClick={handleContinue}
                     disabled={!isAnswered || submitting}
-                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-8 py-4 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-8 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {submitting
                         ? "Saving result..."

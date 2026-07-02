@@ -1,36 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-    getTopics,
-    getVocabularies,
-    getMyQuizResults,
-} from "../services/dashboardService";
-import { useAuth } from "../context/AuthContext";
-import StatCard from "../components/StatCard";
-import LearningCard from "../components/LearningCard";
-import ProgressCard from "../components/ProgressCard";
-import BadgeCard from "../components/BadgeCard";
-import {
-    Star,
+    BarChart3,
     BookOpen,
     Brain,
+    CheckCircle2,
+    ChevronRight,
     Crown,
-    FileText,
-    Trophy,
-    Target,
     Flame,
+    GraduationCap,
+    LineChart,
     Lock,
-    Rocket,
-    PawPrint,
-    Utensils,
-    Plane,
-    School,
-    Users,
-    Dumbbell,
+    Medal,
+    PlayCircle,
+    Star,
+    Target,
+    Trophy,
 } from "lucide-react";
+import {
+    getMyQuizResults,
+    getTopics,
+    getVocabularies,
+} from "../services/dashboardService";
+import { useAuth } from "../context/AuthContext";
+import PageSkeleton from "../components/PageSkeleton";
 
 function Dashboard() {
     const { user, isPremium } = useAuth();
+    const [topics, setTopics] = useState([]);
+    const [vocabularies, setVocabularies] = useState([]);
+    const [quizResults, setQuizResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const displayName =
         user?.name ||
@@ -39,384 +40,477 @@ function Dashboard() {
         user?.email ||
         "Learner";
 
-    const [stats, setStats] = useState({
-        topics: 0,
-        vocabularies: 0,
-        quizResults: 0,
-        averageScore: "0.0",
-        bestScore: "0.0",
-        xpPoints: 0,
-        level: 1,
-        levelProgress: 0,
-        nextLevelXp: 100,
-    });
-
-    const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const [topics, vocabularies, quizResults] = await Promise.all([
-                    getTopics(),
-                    getVocabularies(),
-                    getMyQuizResults(),
-                ]);
+                setLoading(true);
+                setErrorMessage("");
 
-                const quizCount = quizResults.length;
+                const [topicData, vocabularyData, quizResultData] =
+                    await Promise.all([
+                        getTopics(),
+                        getVocabularies(),
+                        getMyQuizResults(),
+                    ]);
 
-                const averageScore =
-                    quizCount > 0
-                        ? quizResults.reduce(
-                            (sum, item) => sum + Number(item.score || 0),
-                            0
-                        ) / quizCount
-                        : 0;
-
-                const bestScore =
-                    quizCount > 0
-                        ? Math.max(
-                            ...quizResults.map((item) =>
-                                Number(item.score || 0)
-                            )
-                        )
-                        : 0;
-
-                setStats({
-                    topics: topics.length,
-                    vocabularies: vocabularies.length,
-                    quizResults: quizCount,
-                    averageScore: averageScore.toFixed(1),
-                    bestScore: bestScore.toFixed(1),
-                    xpPoints: user?.xp || 0,
-                    level: user?.level || 1,
-                    levelProgress: user?.levelProgress || 0,
-                    nextLevelXp: user?.nextLevelXp || 100,
-                });
+                setTopics(topicData);
+                setVocabularies(vocabularyData);
+                setQuizResults(quizResultData);
             } catch (error) {
                 console.error("Failed to load dashboard data", error);
+                setErrorMessage("Could not load dashboard data right now.");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchDashboardData();
-    }, [user]);
+    }, []);
 
-    const recommendedTopics = [
-        {
-            icon: <PawPrint size={32} />,
-            title: "Animals",
-            description: "Learn animal vocabulary",
-            progress: 70,
-            color: "bg-green-100",
-        },
-        {
-            icon: <Utensils size={32} />,
-            title: "Food",
-            description: "Practice food words",
-            progress: 45,
-            color: "bg-yellow-100",
-        },
-        {
-            icon: <Plane size={32} />,
-            title: "Travel",
-            description: "Useful travel English",
-            progress: 30,
-            color: "bg-blue-100",
-        },
-        {
-            icon: <School size={32} />,
-            title: "School",
-            description: "Classroom vocabulary",
-            progress: 55,
-            color: "bg-purple-100",
-        },
-        {
-            icon: <Users size={32} />,
-            title: "Family",
-            description: "Family member words",
-            progress: 80,
-            color: "bg-orange-100",
-        },
-        {
-            icon: <Dumbbell size={32} />,
-            title: "Sports",
-            description: "Learn sports vocabulary",
-            progress: 25,
-            color: "bg-sky-100",
-        },
-    ];
+    const stats = useMemo(() => {
+        const quizCount = quizResults.length;
+        const averageScore =
+            quizCount > 0
+                ? quizResults.reduce(
+                    (sum, item) => sum + Number(item.score || 0),
+                    0
+                ) / quizCount
+                : 0;
+        const bestScore =
+            quizCount > 0
+                ? Math.max(...quizResults.map((item) => Number(item.score || 0)))
+                : 0;
+
+        return {
+            topics: topics.length,
+            vocabularies: vocabularies.length,
+            quizResults: quizCount,
+            averageScore: averageScore.toFixed(1),
+            bestScore: bestScore.toFixed(1),
+            xpPoints: user?.xp || 0,
+            level: user?.level || 1,
+            levelProgress: Math.min(user?.levelProgress || 0, 100),
+            nextLevelXp: user?.nextLevelXp || 100,
+            dailyStreak: user?.dailyStreak || 0,
+        };
+    }, [quizResults, topics.length, user, vocabularies.length]);
+
+    const readyTopics = useMemo(
+        () =>
+            topics
+                .map((topic) => ({
+                    ...topic,
+                    vocabularyCount:
+                        topic.vocabularyCount ??
+                        vocabularies.filter(
+                            (vocabulary) =>
+                                Number(vocabulary.topicId) === Number(topic.id)
+                        ).length,
+                }))
+                .filter((topic) => !topic.locked && topic.vocabularyCount > 0)
+                .slice(0, 4),
+        [topics, vocabularies]
+    );
+
+    const recentResults = quizResults.slice(0, 4);
+    const weeklyGoalPercent = Math.min(
+        Math.round((stats.quizResults / 7) * 100),
+        100
+    );
 
     if (loading) {
-        return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="text-center">
-                    <div className="flex justify-center mb-4 animate-bounce">
-                        <Rocket size={56} className="text-[#58CC02]" />
-                    </div>
-
-                    <p className="text-slate-500 font-bold">
-                        Loading your learning world...
-                    </p>
-                </div>
-            </div>
-        );
+        return <PageSkeleton variant="dashboard" />;
     }
 
     return (
-        <div className="space-y-8">
-            <section className="bg-gradient-to-r from-[#58CC02] to-[#1CB0F6] rounded-[2rem] p-6 md:p-8 text-white shadow-lg overflow-hidden relative">
-                <div className="relative z-10 max-w-2xl">
-                    <p className="text-white/80 font-bold mb-2">
-                        Welcome back, {displayName}
-                    </p>
-
-                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
-                        <Crown className="h-4 w-4" />
-                        {isPremium ? "Premium Plan" : "Free Plan"}
-                    </div>
-
-                    <h1 className="text-3xl md:text-5xl font-black leading-tight">
-                        Ready to learn English today?
-                    </h1>
-
-                    <p className="mt-4 text-white/90 text-lg">
-                        Keep your streak alive and unlock new achievements.
-                    </p>
-
-                    <a
-                        href="/quiz"
-                        className="inline-block mt-6 bg-white text-[#58CC02] px-8 py-4 rounded-2xl font-black shadow-md hover:scale-105 transition-all"
-                    >
-                        Continue Learning
-                    </a>
+        <div className="mx-auto max-w-7xl space-y-6">
+            {errorMessage && (
+                <div className="rounded-2xl bg-red-50 p-4 font-semibold text-red-500 dark:bg-red-950/40">
+                    {errorMessage}
                 </div>
+            )}
 
-                <div className="absolute right-8 bottom-8 opacity-30">
-                    <Rocket size={120} />
-                </div>
-            </section>
+            <section className="grid gap-5 xl:grid-cols-[1fr_360px]">
+                <div className="overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#58CC02] via-[#1CB0F6] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 dark:shadow-none md:p-7">
+                    <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                        <div>
+                            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold text-white">
+                                <Flame className="h-4 w-4" />
+                                {stats.dailyStreak} day streak
+                            </div>
+                            <h1 className="max-w-2xl text-3xl font-bold tracking-tight text-white md:text-4xl">
+                                Welcome back, {displayName}
+                            </h1>
+                            <p className="mt-3 max-w-2xl text-base font-medium leading-7 text-white/90">
+                                Keep the session focused: review a topic, take a quiz,
+                                or check your ranking progress.
+                            </p>
+                        </div>
 
-            <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                <StatCard
-                    icon={<Star size={28} />}
-                    title="XP Points"
-                    value={stats.xpPoints}
-                    subtitle="total experience"
-                    color="bg-yellow-100"
-                />
-
-                <StatCard
-                    icon={<BookOpen size={28} />}
-                    title="Topics"
-                    value={stats.topics}
-                    subtitle="learning topics"
-                    color="bg-blue-100"
-                />
-
-                <StatCard
-                    icon={<Brain size={28} />}
-                    title="Words"
-                    value={stats.vocabularies}
-                    subtitle="vocabulary learned"
-                    color="bg-purple-100"
-                />
-
-                <StatCard
-                    icon={<FileText size={28} />}
-                    title="Quiz Attempts"
-                    value={stats.quizResults}
-                    subtitle="completed quizzes"
-                    color="bg-green-100"
-                />
-            </section>
-
-            <section className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <p className="text-sm font-bold text-slate-400">
-                            Current Level
-                        </p>
-
-                        <h3 className="text-3xl font-black text-slate-800">
-                            Level {stats.level}
-                        </h3>
-                    </div>
-
-                    <div className="w-14 h-14 rounded-2xl bg-yellow-100 flex items-center justify-center text-yellow-500">
-                        <Trophy size={30} />
-                    </div>
-                </div>
-
-                <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-[#58CC02] rounded-full transition-all duration-500"
-                        style={{ width: `${stats.levelProgress}%` }}
-                    ></div>
-                </div>
-
-                <p className="text-sm text-slate-500 font-bold mt-3">
-                    {stats.xpPoints} / {stats.nextLevelXp} XP to next level
-                </p>
-            </section>
-
-            <section
-                className={`rounded-[1.75rem] border p-6 shadow-sm ${
-                    isPremium
-                        ? "border-yellow-100 bg-yellow-50"
-                        : "border-slate-100 bg-white"
-                }`}
-            >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-start gap-4">
                         <div
-                            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl ${
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold ${
                                 isPremium
-                                    ? "bg-white text-yellow-500"
-                                    : "bg-slate-100 text-slate-500"
+                                    ? "bg-yellow-300 text-slate-950"
+                                    : "bg-white/20 text-white"
                             }`}
                         >
-                            {isPremium ? (
-                                <Crown className="h-7 w-7" />
-                            ) : (
-                                <Lock className="h-7 w-7" />
-                            )}
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black text-slate-900">
-                                {isPremium
-                                    ? "Premium learning unlocked"
-                                    : "Upgrade your learning toolkit"}
-                            </h2>
-                            <p className="mt-2 max-w-3xl font-semibold text-slate-500">
-                                {isPremium
-                                    ? "You can access premium topics, longer quizzes, ranking insights, and export tools."
-                                    : "Premium unlocks longer quizzes, premium topics, ranking insights, and vocabulary export."}
-                            </p>
+                            <Crown className="h-4 w-4" />
+                            {isPremium ? "Premium" : "Free"}
                         </div>
                     </div>
 
-                    {!isPremium && (
+                    <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                        <ActionLink
+                            to="/learn"
+                            icon={<GraduationCap className="h-5 w-5" />}
+                            title="Start learning"
+                            description="Open lesson library"
+                        />
+                        <ActionLink
+                            to="/quiz"
+                            icon={<Target className="h-5 w-5" />}
+                            title="Practice quiz"
+                            description="Train recall"
+                        />
+                        <ActionLink
+                            to="/ranking"
+                            icon={<Trophy className="h-5 w-5" />}
+                            title="View ranking"
+                            description="Compare XP"
+                        />
+                    </div>
+                </div>
+
+                <div className="rounded-[1.75rem] border border-green-100 bg-white p-6 shadow-lg shadow-green-100 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <p className="text-sm font-bold text-slate-400">
+                                Current level
+                            </p>
+                            <h2 className="mt-1 text-4xl font-bold text-slate-950 dark:text-white">
+                                Level {stats.level}
+                            </h2>
+                        </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-100 text-yellow-600 dark:bg-yellow-950 dark:text-yellow-300">
+                            <Medal className="h-6 w-6" />
+                        </div>
+                    </div>
+
+                    <div
+                        className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+                        role="progressbar"
+                        aria-label="Level progress"
+                        aria-valuenow={stats.levelProgress}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                    >
+                        <div
+                            className="h-full rounded-full bg-[#58CC02] transition-all duration-700"
+                            style={{ width: `${stats.levelProgress}%` }}
+                        />
+                    </div>
+                    <p className="mt-3 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                        {stats.xpPoints} / {stats.nextLevelXp} XP
+                    </p>
+                </div>
+            </section>
+
+            <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <MetricCard
+                    icon={<Star className="h-5 w-5" />}
+                    label="XP"
+                    value={stats.xpPoints}
+                    helper="Total experience"
+                    tone="yellow"
+                />
+                <MetricCard
+                    icon={<BookOpen className="h-5 w-5" />}
+                    label="Topics"
+                    value={stats.topics}
+                    helper="Available lessons"
+                    tone="green"
+                />
+                <MetricCard
+                    icon={<Brain className="h-5 w-5" />}
+                    label="Words"
+                    value={stats.vocabularies}
+                    helper="Vocabulary bank"
+                    tone="blue"
+                />
+                <MetricCard
+                    icon={<CheckCircle2 className="h-5 w-5" />}
+                    label="Quizzes"
+                    value={stats.quizResults}
+                    helper="Completed attempts"
+                    tone="purple"
+                />
+            </section>
+
+            <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+                <Panel
+                    title="Weekly rhythm"
+                    description="A steady week beats one huge session."
+                    icon={<LineChart className="h-5 w-5" />}
+                    tone="green"
+                >
+                    <div className="flex items-end justify-between gap-4">
+                        <div>
+                            <p className="text-4xl font-bold text-slate-950 dark:text-white">
+                                {stats.quizResults}/7
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                                quizzes completed
+                            </p>
+                        </div>
+                        <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-bold text-[#58CC02] dark:bg-green-950">
+                            {weeklyGoalPercent}%
+                        </span>
+                    </div>
+                    <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                        <div
+                            className="h-full rounded-full bg-[#58CC02] transition-all duration-700"
+                            style={{ width: `${weeklyGoalPercent}%` }}
+                        />
+                    </div>
+                </Panel>
+
+                <Panel
+                    title="Quiz performance"
+                    description="Use your score trend to decide what to review next."
+                    icon={<BarChart3 className="h-5 w-5" />}
+                    tone="blue"
+                >
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        <ScoreBlock label="Average score" value={stats.averageScore} />
+                        <ScoreBlock label="Best score" value={stats.bestScore} />
+                    </div>
+                </Panel>
+            </section>
+
+            <section className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+                <Panel
+                    title="Ready lessons"
+                    description="Pulled from real backend topics with vocabulary."
+                    icon={<GraduationCap className="h-5 w-5" />}
+                    tone="green"
+                >
+                    {readyTopics.length === 0 ? (
+                        <EmptyState
+                            title="No lessons ready yet"
+                            description="Add vocabulary to a topic before it appears here."
+                            actionLabel="Manage topics"
+                            to="/topics"
+                        />
+                    ) : (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            {readyTopics.map((topic) => (
+                                <Link
+                                    key={topic.id}
+                                    to={`/learn/${topic.id}`}
+                                    className="group rounded-2xl border border-green-100 bg-green-50/70 p-4 transition-all hover:-translate-y-0.5 hover:border-[#58CC02] hover:bg-green-50 focus:outline-none focus:ring-4 focus:ring-green-100 dark:border-green-900 dark:bg-green-950/20 dark:hover:bg-green-950/30"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <h3 className="truncate font-bold text-slate-950 dark:text-white">
+                                                {topic.name}
+                                            </h3>
+                                            <p className="mt-1 line-clamp-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                                {topic.description ||
+                                                    "Practice this vocabulary set."}
+                                            </p>
+                                        </div>
+                                        <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                                    </div>
+                                    <p className="mt-4 text-sm font-bold text-[#1CB0F6]">
+                                        {topic.vocabularyCount} words
+                                    </p>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </Panel>
+
+                <Panel
+                    title="Recent results"
+                    description="Latest quiz attempts from your account."
+                    icon={<Trophy className="h-5 w-5" />}
+                    tone="purple"
+                >
+                    {recentResults.length === 0 ? (
+                        <EmptyState
+                            title="No quiz results yet"
+                            description="Take your first quiz to see score history."
+                            actionLabel="Start quiz"
+                            to="/quiz"
+                        />
+                    ) : (
+                        <div className="space-y-3">
+                            {recentResults.map((result) => (
+                                <div
+                                    key={result.id}
+                                    className="flex items-center justify-between gap-4 rounded-2xl bg-purple-50/70 p-4 dark:bg-purple-950/20"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-slate-950 dark:text-white">
+                                            {result.topicName || "Mixed practice"}
+                                        </p>
+                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                                            {result.correctAnswers}/{result.totalQuestions} correct
+                                        </p>
+                                    </div>
+                                    <span className="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#1CB0F6] dark:bg-slate-800">
+                                        {Number(result.score || 0).toFixed(1)}%
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Panel>
+            </section>
+
+            {!isPremium && (
+                <section className="rounded-[1.5rem] border border-yellow-200 bg-yellow-50 p-5 dark:border-yellow-900 dark:bg-yellow-950/40">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-start gap-3">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200">
+                                <Lock className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-950 dark:text-white">
+                                    Unlock longer practice sessions
+                                </h2>
+                                <p className="mt-1 max-w-2xl text-sm font-medium text-slate-600 dark:text-slate-300">
+                                    Premium adds longer quizzes, premium topics, and export tools.
+                                </p>
+                            </div>
+                        </div>
                         <Link
                             to="/premium"
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-5 py-3 text-sm font-bold text-slate-950 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                         >
-                            <Crown className="h-5 w-5" />
+                            <Crown className="h-4 w-4" />
                             View Premium
                         </Link>
-                    )}
-                </div>
-            </section>
-
-            <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2">
-                    <ProgressCard
-                        title="Weekly Learning Goal"
-                        value={stats.quizResults}
-                        target={7}
-                    />
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                    <h3 className="text-xl font-black text-slate-800 mb-2">
-                        Quiz Performance
-                    </h3>
-
-                    <p className="text-slate-500 text-sm mb-4">
-                        Your average and best quiz score
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <p className="text-sm font-bold text-slate-400">
-                                Average
-                            </p>
-                            <div className="flex items-end gap-1">
-                                <span className="text-4xl font-black text-[#58CC02]">
-                                    {stats.averageScore}
-                                </span>
-                                <span className="text-slate-400 font-bold mb-1">
-                                    %
-                                </span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="text-sm font-bold text-slate-400">
-                                Best
-                            </p>
-                            <div className="flex items-end gap-1">
-                                <span className="text-4xl font-black text-[#1CB0F6]">
-                                    {stats.bestScore}
-                                </span>
-                                <span className="text-slate-400 font-bold mb-1">
-                                    %
-                                </span>
-                            </div>
-                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
+        </div>
+    );
+}
 
-            <section>
-                <div className="flex items-center justify-between mb-5">
-                    <div>
-                        <h2 className="text-2xl font-black text-slate-800">
-                            Recommended Lessons
-                        </h2>
-                        <p className="text-slate-500">
-                            Choose a topic and start learning.
-                        </p>
-                    </div>
-                </div>
+function ActionLink({ to, icon, title, description }) {
+    return (
+        <Link
+            to={to}
+            className="group rounded-2xl border border-white/20 bg-white/20 p-4 text-white backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white/30 focus:outline-none focus:ring-4 focus:ring-white/40"
+        >
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[#58CC02]">
+                {icon}
+            </div>
+            <p className="font-bold text-white">{title}</p>
+            <p className="mt-1 text-sm font-medium text-white/80">
+                {description}
+            </p>
+        </Link>
+    );
+}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {recommendedTopics.map((topic) => (
-                        <LearningCard
-                            key={topic.title}
-                            icon={topic.icon}
-                            title={topic.title}
-                            description={topic.description}
-                            progress={topic.progress}
-                            color={topic.color}
-                        />
-                    ))}
-                </div>
-            </section>
+function MetricCard({ icon, label, value, helper, tone = "blue" }) {
+    const tones = {
+        green: {
+            card: "border-green-100 shadow-green-100",
+            icon: "bg-green-50 text-[#58CC02] dark:bg-green-950",
+        },
+        blue: {
+            card: "border-sky-100 shadow-sky-100",
+            icon: "bg-sky-50 text-[#1CB0F6] dark:bg-sky-950",
+        },
+        purple: {
+            card: "border-purple-100 shadow-purple-100",
+            icon: "bg-purple-50 text-[#CE82FF] dark:bg-purple-950",
+        },
+        yellow: {
+            card: "border-yellow-100 shadow-yellow-100",
+            icon: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
+        },
+    };
+    const selectedTone = tones[tone] || tones.blue;
 
-            <section>
-                <div className="mb-5">
-                    <h2 className="text-2xl font-black text-slate-800">
-                        Achievements
+    return (
+        <article className={`rounded-[1.5rem] border bg-white p-4 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:shadow-none ${selectedTone.card}`}>
+            <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-2xl ${selectedTone.icon}`}>
+                {icon}
+            </div>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                {label}
+            </p>
+            <p className="mt-1 text-3xl font-bold text-slate-950 dark:text-white">
+                {value}
+            </p>
+            <p className="mt-1 text-xs font-medium text-slate-400">{helper}</p>
+        </article>
+    );
+}
+
+function Panel({ title, description, icon, children, tone = "blue" }) {
+    const tones = {
+        green: "bg-green-50 text-[#58CC02] dark:bg-green-950",
+        blue: "bg-sky-50 text-[#1CB0F6] dark:bg-sky-950",
+        purple: "bg-purple-50 text-[#CE82FF] dark:bg-purple-950",
+        yellow: "bg-yellow-50 text-yellow-500 dark:bg-yellow-950",
+    };
+
+    return (
+        <section className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-lg shadow-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+            <div className="mb-5 flex items-start gap-3">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${tones[tone] || tones.blue}`}>
+                    {icon}
+                </div>
+                <div>
+                    <h2 className="text-xl font-bold text-slate-950 dark:text-white">
+                        {title}
                     </h2>
-                    <p className="text-slate-500">
-                        Your learning milestones.
+                    <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                        {description}
                     </p>
                 </div>
+            </div>
+            {children}
+        </section>
+    );
+}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <BadgeCard
-                        icon={<Flame size={30} />}
-                        title="Streak Starter"
-                        description="Complete your first weekly learning goal"
-                        color="bg-orange-100"
-                    />
+function ScoreBlock({ label, value }) {
+    return (
+        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                {label}
+            </p>
+            <div className="mt-2 flex items-end gap-1">
+                <span className="text-4xl font-bold text-slate-950 dark:text-white">
+                    {value}
+                </span>
+                <span className="mb-1 font-semibold text-slate-400">%</span>
+            </div>
+        </div>
+    );
+}
 
-                    <BadgeCard
-                        icon={<BookOpen size={30} />}
-                        title="Word Collector"
-                        description="Build your vocabulary collection"
-                        color="bg-blue-100"
-                    />
-
-                    <BadgeCard
-                        icon={<Target size={30} />}
-                        title="Quiz Beginner"
-                        description="Complete your first quiz"
-                        color="bg-green-100"
-                    />
-                </div>
-            </section>
+function EmptyState({ title, description, actionLabel, to }) {
+    return (
+        <div className="rounded-2xl bg-slate-50 p-5 text-center dark:bg-slate-950">
+            <PlayCircle className="mx-auto mb-3 h-9 w-9 text-slate-300" />
+            <h3 className="font-bold text-slate-950 dark:text-white">{title}</h3>
+            <p className="mx-auto mt-1 max-w-sm text-sm font-medium text-slate-500 dark:text-slate-400">
+                {description}
+            </p>
+            <Link
+                to={to}
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-4 py-2 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-green-100"
+            >
+                {actionLabel}
+                <ChevronRight className="h-4 w-4" />
+            </Link>
         </div>
     );
 }

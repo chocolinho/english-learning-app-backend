@@ -61,22 +61,22 @@ function MainLayout() {
     ];
 
     const navLinkClass = ({ isActive }) =>
-        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all focus:outline-none focus:ring-4 focus:ring-green-100 ${
+        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-green-100 ${
             isActive
                 ? "bg-[#58CC02] text-white shadow-lg shadow-green-100"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-green-50 hover:text-[#58CC02] dark:text-slate-300 dark:hover:bg-green-950"
         }`;
 
     return (
         <div className="min-h-screen bg-[#F6F8FB] text-slate-800">
-            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col overflow-y-auto border-r border-slate-100 bg-white p-6 lg:flex">
+            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col overflow-y-auto border-r border-green-100 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 lg:flex">
                 <div className="mb-8 flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#58CC02] shadow-lg shadow-green-100">
                         <BookOpen className="h-7 w-7 text-white" />
                     </div>
 
                     <div>
-                        <h1 className="text-2xl font-black text-slate-900">
+                        <h1 className="text-2xl font-bold text-slate-900">
                             LinguaKid
                         </h1>
                         <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
@@ -89,14 +89,14 @@ function MainLayout() {
                     <PreferenceControls />
                 </div>
 
-                <div className="mb-7 rounded-[1.75rem] border border-slate-100 bg-slate-50 p-4">
+                <div className="mb-7 rounded-[1.5rem] border border-green-100 bg-green-50/70 p-4 dark:border-slate-800 dark:bg-slate-950">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#1CB0F6] shadow-sm">
                             <UserRound className="h-5 w-5" />
                         </div>
 
                         <div className="min-w-0">
-                            <p className="truncate text-sm font-black text-slate-800">
+                            <p className="truncate text-sm font-bold text-slate-800">
                                 {loadingUser ? t("loading") : displayName}
                             </p>
                             <p className="text-xs font-bold text-slate-400">
@@ -106,7 +106,7 @@ function MainLayout() {
                     </div>
 
                     <div
-                        className={`mt-4 inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-black ${
+                        className={`mt-4 inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-bold ${
                             isPremium
                                 ? "bg-yellow-100 text-yellow-600"
                                 : "bg-slate-100 text-slate-500"
@@ -145,7 +145,7 @@ function MainLayout() {
                     })}
 
                     <div className="pt-4">
-                        <p className="px-4 pb-2 text-xs font-black uppercase text-slate-400">
+                        <p className="px-4 pb-2 text-xs font-bold uppercase text-slate-400">
                             {t("more")}
                         </p>
                         <div className="space-y-2">
@@ -170,14 +170,14 @@ function MainLayout() {
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-black text-red-500 transition-all hover:bg-red-50"
+                    className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-bold text-red-500 transition-all hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-100"
                 >
                     <LogOut className="h-5 w-5" />
                     {t("logout")}
                 </button>
             </aside>
 
-            <header className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-20 border-b border-green-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 lg:hidden">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#58CC02]">
@@ -185,7 +185,7 @@ function MainLayout() {
                         </div>
 
                         <div className="min-w-0">
-                            <h1 className="truncate text-lg font-black text-slate-900">
+                            <h1 className="truncate text-lg font-bold text-slate-900">
                                 LinguaKid
                             </h1>
                             <p className="truncate text-xs font-bold text-slate-400 dark:text-slate-500">
@@ -215,7 +215,7 @@ function MainLayout() {
                             style={{ width: `${levelProgress}%` }}
                         />
                     </div>
-                    <span className="text-xs font-black text-slate-500">
+                    <span className="text-xs font-bold text-slate-500">
                         {totalXp} XP
                     </span>
                 </div>
@@ -232,10 +232,10 @@ function MainLayout() {
                                 key={item.to}
                                 to={item.to}
                                 className={({ isActive }) =>
-                                    `inline-flex shrink-0 items-center gap-2 rounded-2xl px-3 py-2 text-xs font-black transition-all ${
+                                    `inline-flex shrink-0 items-center gap-2 rounded-2xl px-3 py-2 text-xs font-bold transition-all ${
                                         isActive
                                             ? "bg-green-50 text-[#58CC02]"
-                                            : "bg-slate-50 text-slate-500"
+                                            : "bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                                     } focus:outline-none focus:ring-4 focus:ring-green-100`
                                 }
                             >
@@ -252,7 +252,7 @@ function MainLayout() {
             </main>
 
             <nav
-                className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 gap-1 border-t border-slate-100 bg-white/95 px-2 py-2 backdrop-blur lg:hidden"
+                className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 gap-1 border-t border-green-100 bg-white/95 px-2 py-2 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 lg:hidden"
                 aria-label="Primary mobile navigation"
             >
                 {navItems.map((item) => {
@@ -263,7 +263,7 @@ function MainLayout() {
                             key={item.to}
                             to={item.to}
                             className={({ isActive }) =>
-                                `flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black transition-all ${
+                                `flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-bold transition-all ${
                                     isActive
                                         ? "bg-green-50 text-[#58CC02]"
                                         : "text-slate-400"

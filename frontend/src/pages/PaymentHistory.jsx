@@ -40,17 +40,17 @@ function PaymentHistory() {
 
     return (
         <div className="mx-auto max-w-6xl space-y-6">
-            <section className="rounded-[2rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-yellow-300 p-6 text-white shadow-xl shadow-sky-100 md:p-8">
+            <section className="rounded-[1.75rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-yellow-300 p-6 text-white shadow-xl shadow-sky-100 dark:shadow-none md:p-8">
                 <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold">
                             <Receipt className="h-4 w-4" />
                             Payment History
                         </div>
-                        <h1 className="text-3xl font-black md:text-5xl">
+                        <h1 className="text-3xl font-bold md:text-5xl">
                             Your Premium payments
                         </h1>
-                        <p className="mt-3 max-w-2xl font-semibold text-white/90">
+                        <p className="mt-3 max-w-2xl font-medium text-white/90">
                             Track mock subscription transactions created from the Premium page.
                         </p>
                     </div>
@@ -58,7 +58,7 @@ function PaymentHistory() {
                     <button
                         type="button"
                         onClick={fetchPayments}
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-black text-[#1CB0F6] shadow-lg shadow-sky-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-white/40"
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-bold text-[#1CB0F6] shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-white/40"
                     >
                         <RefreshCcw className="h-5 w-5" />
                         Refresh
@@ -67,7 +67,7 @@ function PaymentHistory() {
             </section>
 
             {errorMessage && (
-                <div className="rounded-3xl bg-red-50 p-4 font-bold text-red-500">
+                <div className="rounded-2xl bg-red-50 p-4 font-semibold text-red-500 dark:bg-red-950/40">
                     {errorMessage}
                 </div>
             )}
@@ -93,12 +93,12 @@ function PaymentHistory() {
                 />
             </section>
 
-            <section className="overflow-hidden rounded-[1.75rem] border border-slate-100 bg-white shadow-sm">
-                <div className="border-b border-slate-100 p-5">
-                    <h2 className="text-2xl font-black text-slate-900">
+            <section className="overflow-hidden rounded-[1.5rem] border border-sky-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="border-b border-slate-100 p-5 dark:border-slate-800">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         Transactions
                     </h2>
-                    <p className="mt-1 font-semibold text-slate-500">
+                    <p className="mt-1 font-medium text-slate-500 dark:text-slate-400">
                         Latest payments are shown first.
                     </p>
                 </div>
@@ -106,14 +106,14 @@ function PaymentHistory() {
                 {payments.length === 0 ? (
                     <div className="p-8 text-center">
                         <Receipt className="mx-auto mb-4 h-12 w-12 text-slate-300" />
-                        <p className="font-black text-slate-500">
+                        <p className="font-bold text-slate-500 dark:text-slate-400">
                             No payment history yet.
                         </p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[760px]">
-                            <thead className="bg-slate-50">
+                            <thead className="bg-sky-50 dark:bg-slate-950">
                                 <tr>
                                     <TableHeader>ID</TableHeader>
                                     <TableHeader>Plan</TableHeader>
@@ -127,19 +127,19 @@ function PaymentHistory() {
                                 {payments.map((payment) => (
                                     <tr
                                         key={payment.id}
-                                        className="border-t border-slate-100"
+                                        className="border-t border-slate-100 dark:border-slate-800"
                                     >
-                                        <td className="p-4 font-black text-slate-500">
+                                        <td className="p-4 font-bold text-slate-500">
                                             #{payment.id}
                                         </td>
-                                        <td className="p-4 font-black text-slate-900">
+                                        <td className="p-4 font-bold text-slate-950 dark:text-white">
                                             {payment.planType}
                                         </td>
-                                        <td className="p-4 font-black text-slate-700">
+                                        <td className="p-4 font-bold text-slate-700 dark:text-slate-200">
                                             ${payment.amount}
                                         </td>
                                         <td className="p-4">
-                                            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-[#58CC02]">
+                                            <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-[#58CC02] dark:bg-green-950">
                                                 {payment.status}
                                             </span>
                                         </td>
@@ -162,19 +162,19 @@ function PaymentHistory() {
 
 function PaymentStat({ icon, label, value, color }) {
     return (
-        <article className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+        <article className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
             <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${color}`}>
                 {icon}
             </div>
-            <p className="text-sm font-black text-slate-400">{label}</p>
-            <p className="mt-1 text-4xl font-black text-slate-900">{value}</p>
+            <p className="text-sm font-semibold text-slate-400">{label}</p>
+            <p className="mt-1 text-4xl font-bold text-slate-950 dark:text-white">{value}</p>
         </article>
     );
 }
 
 function TableHeader({ children }) {
     return (
-        <th className="p-4 text-left text-sm font-black text-slate-500">
+        <th className="p-4 text-left text-sm font-bold text-slate-500 dark:text-slate-400">
             {children}
         </th>
     );

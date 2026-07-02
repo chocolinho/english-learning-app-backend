@@ -74,30 +74,30 @@ function Premium() {
 
     return (
         <div className="mx-auto max-w-7xl space-y-6">
-            <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-yellow-300 via-[#58CC02] to-[#1CB0F6] p-6 text-slate-900 shadow-xl shadow-yellow-100 md:p-8">
+            <section className="overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-yellow-300 via-[#58CC02] to-[#1CB0F6] p-6 text-slate-900 shadow-xl shadow-yellow-100 dark:shadow-none md:p-8">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/40 px-4 py-2 text-sm font-black">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/40 px-3 py-1.5 text-sm font-bold">
                             <Crown className="h-4 w-4" />
                             Premium Upgrade
                         </div>
-                        <h1 className="max-w-3xl text-3xl font-black leading-tight md:text-5xl">
+                        <h1 className="max-w-3xl text-3xl font-bold leading-tight md:text-5xl">
                             Unlock the stronger learning mode.
                         </h1>
-                        <p className="mt-3 max-w-2xl font-semibold text-slate-700">
+                        <p className="mt-3 max-w-2xl font-medium text-slate-700">
                             Premium opens advanced practice, premium topics, longer quizzes,
                             and deeper progress tools for serious English learning.
                         </p>
                     </div>
 
-                    <div className="rounded-[1.75rem] bg-white/55 p-5 backdrop-blur lg:min-w-72">
-                        <p className="text-sm font-black text-slate-500">
+                    <div className="rounded-[1.5rem] bg-white/55 p-5 backdrop-blur lg:min-w-72">
+                        <p className="text-sm font-bold text-slate-500">
                             Current Plan
                         </p>
-                        <p className="mt-1 text-3xl font-black text-slate-900">
+                        <p className="mt-1 text-3xl font-bold text-slate-950">
                             {isPremium ? "Premium" : "Free"}
                         </p>
-                        <p className="mt-2 font-bold text-slate-600">
+                        <p className="mt-2 font-semibold text-slate-600">
                             {premiumUntil
                                 ? `Valid until ${premiumUntil}`
                                 : "Upgrade anytime with mock checkout."}
@@ -109,7 +109,7 @@ function Premium() {
             {(message || errorMessage) && (
                 <div
                     role="status"
-                    className={`flex items-center gap-3 rounded-3xl p-4 font-bold ${
+                    className={`flex items-center gap-3 rounded-2xl p-4 font-semibold ${
                         message
                             ? "bg-green-50 text-[#58CC02]"
                             : "bg-red-50 text-red-500"
@@ -128,15 +128,15 @@ function Premium() {
                         return (
                             <article
                                 key={feature.title}
-                                className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                                className="rounded-[1.5rem] border border-yellow-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
                             >
                                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-100 text-yellow-600">
                                     <Icon className="h-6 w-6" />
                                 </div>
-                                <h2 className="text-xl font-black text-slate-900">
+                                <h2 className="text-xl font-bold text-slate-950 dark:text-white">
                                     {feature.title}
                                 </h2>
-                                <p className="mt-2 font-semibold text-slate-500">
+                                <p className="mt-2 font-medium text-slate-500 dark:text-slate-400">
                                     {feature.text}
                                 </p>
                             </article>
@@ -144,11 +144,11 @@ function Premium() {
                     })}
                 </div>
 
-                <aside className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
-                    <h2 className="text-2xl font-black text-slate-900">
+                <aside className="rounded-[1.5rem] border border-yellow-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         Choose Plan
                     </h2>
-                    <p className="mt-1 font-semibold text-slate-500">
+                    <p className="mt-1 font-medium text-slate-500 dark:text-slate-400">
                         This is a mock payment flow for portfolio testing.
                     </p>
 
@@ -158,29 +158,29 @@ function Premium() {
                                 key={plan.type}
                                 type="button"
                                 onClick={() => setSelectedPlan(plan.type)}
-                                className={`w-full rounded-3xl border-2 p-4 text-left transition-all focus:outline-none focus:ring-4 focus:ring-yellow-100 ${
+                                className={`w-full rounded-2xl border-2 p-4 text-left transition-all focus:outline-none focus:ring-4 focus:ring-yellow-100 ${
                                     selectedPlan === plan.type
                                         ? "border-yellow-400 bg-yellow-50"
-                                        : "border-slate-100 bg-slate-50 hover:border-sky-200"
+                                        : "border-slate-200 bg-slate-50 hover:border-sky-200 dark:border-slate-800 dark:bg-slate-950"
                                 }`}
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <p className="text-xl font-black text-slate-900">
+                                            <p className="text-xl font-bold text-slate-950 dark:text-white">
                                                 {plan.name}
                                             </p>
                                             {plan.highlight && (
-                                                <span className="rounded-full bg-[#58CC02] px-3 py-1 text-xs font-black text-white">
+                                                <span className="rounded-full bg-[#58CC02] px-3 py-1 text-xs font-bold text-white">
                                                     Best
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="mt-1 text-sm font-bold text-slate-500">
+                                        <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
                                             {plan.caption} - {plan.duration}
                                         </p>
                                     </div>
-                                    <p className="text-3xl font-black text-slate-900">
+                                    <p className="text-3xl font-bold text-slate-950 dark:text-white">
                                         {plan.price}
                                     </p>
                                 </div>
@@ -192,7 +192,7 @@ function Premium() {
                         type="button"
                         onClick={handleCheckout}
                         disabled={submitting}
-                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-black text-slate-900 shadow-lg shadow-yellow-100 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-6 py-4 font-bold text-slate-950 shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {submitting ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -204,7 +204,7 @@ function Premium() {
 
                     <Link
                         to="/payments"
-                        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-100 px-6 py-4 font-black text-slate-700 transition-all hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-100"
+                        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-50 px-6 py-4 font-bold text-[#1CB0F6] transition-all hover:-translate-y-0.5 hover:bg-sky-100 focus:outline-none focus:ring-4 focus:ring-sky-100 dark:bg-sky-950"
                     >
                         <FileText className="h-5 w-5" />
                         View Payment History

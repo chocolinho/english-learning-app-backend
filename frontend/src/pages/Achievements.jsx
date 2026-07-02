@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, Flame, Lock, Star, TrendingUp, Trophy } from "lucide-react";
 import { getMyAchievements } from "../services/achievementService";
+import PageSkeleton from "../components/PageSkeleton";
 
 const iconMap = {
     Trophy,
@@ -38,20 +39,34 @@ function Achievements() {
     );
 
     if (loading) {
-        return <p className="font-black text-slate-500">Loading achievements...</p>;
+        return <PageSkeleton variant="dashboard" />;
     }
 
     return (
         <div className="mx-auto max-w-6xl space-y-6">
-            <section className="rounded-[2rem] bg-gradient-to-br from-yellow-400 via-[#58CC02] to-[#1CB0F6] p-6 text-white md:p-8">
-                <h1 className="text-3xl font-black md:text-5xl">Achievements</h1>
-                <p className="mt-3 font-semibold text-white/90">
-                    {unlockedCount} / {achievements.length} badges unlocked.
-                </p>
+            <section className="rounded-[1.75rem] bg-gradient-to-br from-yellow-400 via-[#58CC02] to-[#1CB0F6] p-6 text-white shadow-xl shadow-green-100 dark:shadow-none md:p-8">
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold">
+                            <Trophy className="h-4 w-4" />
+                            Badge collection
+                        </div>
+                        <h1 className="text-3xl font-bold md:text-5xl">Achievements</h1>
+                        <p className="mt-3 font-medium text-white/90">
+                            {unlockedCount} / {achievements.length} badges unlocked.
+                        </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/20 px-5 py-4 text-center backdrop-blur">
+                        <p className="text-4xl font-bold">{unlockedCount}</p>
+                        <p className="text-xs font-bold uppercase text-white/75">
+                            earned
+                        </p>
+                    </div>
+                </div>
             </section>
 
             {errorMessage && (
-                <div className="rounded-3xl bg-red-50 p-4 font-bold text-red-500">
+                <div className="rounded-2xl bg-red-50 p-4 font-semibold text-red-500 dark:bg-red-950/40">
                     {errorMessage}
                 </div>
             )}
@@ -65,28 +80,32 @@ function Achievements() {
                     return (
                         <article
                             key={achievement.code}
-                            className={`rounded-[1.75rem] border p-5 shadow-sm transition-all ${
+                            className={`rounded-[1.5rem] border p-5 shadow-sm transition-all ${
                                 achievement.unlocked
-                                    ? "border-green-100 bg-white hover:-translate-y-1 hover:shadow-xl"
-                                    : "border-slate-100 bg-slate-50 opacity-70"
+                                    ? "border-yellow-100 bg-white hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                                    : "border-slate-200 bg-slate-50 opacity-80 dark:border-slate-800 dark:bg-slate-900"
                             }`}
                         >
                             <div
-                                className={`mb-4 flex h-16 w-16 items-center justify-center rounded-3xl ${
+                                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${
                                     achievement.unlocked
                                         ? "bg-yellow-100 text-yellow-500"
-                                        : "bg-slate-100 text-slate-400"
+                                        : "bg-slate-100 text-slate-400 dark:bg-slate-800"
                                 }`}
                             >
                                 <Icon className="h-8 w-8" />
                             </div>
-                            <h2 className="text-xl font-black text-slate-900">
+                            <h2 className="text-xl font-bold text-slate-950 dark:text-white">
                                 {achievement.title}
                             </h2>
-                            <p className="mt-2 text-sm font-semibold text-slate-500">
+                            <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                                 {achievement.description}
                             </p>
-                            <p className="mt-4 text-xs font-black uppercase text-slate-400">
+                            <p className={`mt-4 text-xs font-bold uppercase ${
+                                achievement.unlocked
+                                    ? "text-[#58CC02]"
+                                    : "text-slate-400"
+                            }`}>
                                 {achievement.unlocked ? "Unlocked" : "Locked"}
                             </p>
                         </article>

@@ -103,7 +103,7 @@ function Topics() {
     };
 
     return (
-        <div>
+        <div className="mx-auto max-w-7xl">
             <PremiumLockedModal
                 open={premiumModalOpen}
                 title="Custom topic limit reached"
@@ -111,18 +111,22 @@ function Topics() {
                 onClose={() => setPremiumModalOpen(false)}
             />
 
-            <div className="flex items-center justify-between mb-6">
+            <section className="mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#58CC02] via-[#1CB0F6] to-[#CE82FF] p-6 text-white shadow-xl shadow-green-100 dark:shadow-none md:p-8">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold">
+                        <Crown className="h-4 w-4" />
+                        Topic workspace
+                    </div>
+                    <h1 className="text-3xl font-bold md:text-5xl">
                         Manage Topics
                     </h1>
-                    <p className="text-slate-500 mt-1">
+                    <p className="mt-3 max-w-2xl font-medium text-white/90">
                         Create and manage learning topics.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <section className="mb-6 rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+            <section className="mb-6 rounded-[1.5rem] border border-green-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
                         <div
@@ -139,10 +143,10 @@ function Topics() {
                             )}
                         </div>
                         <div>
-                            <p className="text-sm font-black text-slate-400">
+                            <p className="text-sm font-bold text-slate-400">
                                 Topic Creator
                             </p>
-                            <p className="font-black text-slate-800">
+                            <p className="font-bold text-slate-950 dark:text-white">
                                 {isPremium
                                     ? "Unlimited custom topics"
                                     : "Free plan: up to 3 custom topics"}
@@ -154,7 +158,7 @@ function Topics() {
                         <button
                             type="button"
                             onClick={() => setPremiumModalOpen(true)}
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-bold text-yellow-700 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                         >
                             <Crown className="h-5 w-5" />
                             Upgrade
@@ -165,14 +169,14 @@ function Topics() {
 
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6"
+                className="mb-6 rounded-[1.5rem] border border-green-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
-                <h2 className="text-xl font-black text-slate-800 mb-4">
+                <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
                     {editingId ? "Edit Topic" : "Add New Topic"}
                 </h2>
 
                 {errorMessage && (
-                    <div className="mb-4 bg-red-50 text-red-500 px-4 py-3 rounded-2xl text-sm font-bold">
+                    <div className="mb-4 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500 dark:bg-red-950/40">
                         {errorMessage}
                     </div>
                 )}
@@ -181,14 +185,14 @@ function Topics() {
                     <input
                         type="text"
                         placeholder="Topic name"
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 flex-1 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
 
                     <button
                         type="submit"
-                        className="bg-[#58CC02] text-white px-7 py-4 rounded-2xl font-black shadow-md hover:scale-[1.02] transition-all"
+                        className="rounded-2xl bg-[#58CC02] px-7 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-100"
                     >
                         {editingId ? "Update Topic" : "Add Topic"}
                     </button>
@@ -197,7 +201,7 @@ function Topics() {
                         <button
                             type="button"
                             onClick={resetForm}
-                            className="bg-slate-100 text-slate-600 px-7 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all"
+                            className="rounded-2xl bg-slate-100 px-7 py-4 font-bold text-slate-600 transition-all hover:-translate-y-0.5 hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:bg-slate-800 dark:text-slate-200"
                         >
                             Cancel
                         </button>
@@ -205,9 +209,9 @@ function Topics() {
                 </div>
             </form>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-xl font-black text-slate-800">
+            <div className="overflow-hidden rounded-[1.5rem] border border-green-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="border-b border-slate-100 p-6 dark:border-slate-800">
+                    <h2 className="text-xl font-bold text-slate-950 dark:text-white">
                         Topic List
                     </h2>
                 </div>
@@ -226,8 +230,9 @@ function Topics() {
                         </p>
                     </div>
                 ) : (
-                    <table className="w-full">
-                        <thead className="bg-slate-50">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[720px]">
+                        <thead className="bg-green-50 dark:bg-slate-950">
                         <tr>
                             <th className="text-left p-4 text-slate-500 text-sm">
                                 ID
@@ -248,19 +253,19 @@ function Topics() {
                         {topics.map((topic) => (
                             <tr
                                 key={topic.id}
-                                className="border-t border-slate-100"
+                                className="border-t border-slate-100 dark:border-slate-800"
                             >
                                 <td className="p-4 text-slate-500">
                                     {topic.id}
                                 </td>
 
-                                <td className="p-4 font-bold text-slate-800">
+                                <td className="p-4 font-bold text-slate-950 dark:text-white">
                                     {topic.name}
                                 </td>
 
                                 <td className="p-4">
                                     <span
-                                        className={`rounded-full px-3 py-1 text-sm font-black ${
+                                        className={`rounded-full px-3 py-1 text-sm font-bold ${
                                             topic.accessType === "PREMIUM"
                                                 ? "bg-yellow-100 text-yellow-700"
                                                 : "bg-green-50 text-[#58CC02]"
@@ -273,19 +278,21 @@ function Topics() {
                                 <td className="p-4">
                                     <div className="flex justify-end gap-3">
                                         <button
+                                            type="button"
                                             onClick={() =>
                                                 handleEdit(topic)
                                             }
-                                            className="px-4 py-2 rounded-xl bg-blue-50 text-blue-500 font-black hover:bg-blue-100 transition-all"
+                                            className="rounded-xl bg-sky-50 px-4 py-2 font-bold text-[#1CB0F6] transition-all hover:bg-sky-100 focus:outline-none focus:ring-4 focus:ring-sky-100"
                                         >
                                             Edit
                                         </button>
 
                                         <button
+                                            type="button"
                                             onClick={() =>
                                                 handleDelete(topic.id)
                                             }
-                                            className="px-4 py-2 rounded-xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all"
+                                            className="rounded-xl bg-red-50 px-4 py-2 font-bold text-red-500 transition-all hover:bg-red-100 focus:outline-none focus:ring-4 focus:ring-red-100"
                                         >
                                             Delete
                                         </button>
@@ -295,6 +302,7 @@ function Topics() {
                         ))}
                         </tbody>
                     </table>
+                    </div>
                 )}
             </div>
         </div>

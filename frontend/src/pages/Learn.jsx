@@ -23,6 +23,7 @@ import { getTopics } from "../services/topicService";
 import { getVocabularies } from "../services/vocabularyService";
 import { useAuth } from "../context/AuthContext";
 import PremiumLockedModal from "../components/PremiumLockedModal";
+import PageSkeleton from "../components/PageSkeleton";
 
 function Learn() {
     const { isPremium } = useAuth();
@@ -117,18 +118,7 @@ function Learn() {
     ).length;
 
     if (loading) {
-        return (
-            <div className="flex min-h-[60vh] items-center justify-center">
-                <div className="text-center">
-                    <div className="mb-4 flex justify-center animate-bounce">
-                        <BookOpen size={56} className="text-[#58CC02]" />
-                    </div>
-                    <p className="font-black text-slate-500">
-                        Loading lessons...
-                    </p>
-                </div>
-            </div>
-        );
+        return <PageSkeleton variant="dashboard" />;
     }
 
     return (
@@ -141,54 +131,58 @@ function Learn() {
             />
 
             {errorMessage && (
-                <div className="rounded-3xl bg-red-50 p-4 font-bold text-red-500">
+                <div className="rounded-2xl bg-red-50 p-4 font-semibold text-red-500 dark:bg-red-950/40">
                     {errorMessage}
                 </div>
             )}
 
-            <section className="rounded-[2rem] bg-gradient-to-br from-[#58CC02] via-[#1CB0F6] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 md:p-8">
-                <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-                    <div>
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-black">
+            <section className="grid gap-5 xl:grid-cols-[1fr_340px]">
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:p-7">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-sm font-bold text-[#58CC02] dark:bg-green-950">
                             <Sparkles className="h-4 w-4" />
                             {isPremium ? "Premium library" : "Flashcard learning"}
-                        </div>
-                        <h1 className="text-3xl font-black md:text-5xl">
-                            Pick a topic and flip through words.
-                        </h1>
-                        <p className="mt-3 max-w-2xl font-semibold text-white/90">
-                            Lessons come directly from your backend topics and
-                            vocabulary library.
-                        </p>
                     </div>
+                    <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-slate-950 dark:text-white md:text-4xl">
+                        Choose a topic, flip the card, hear the word.
+                    </h1>
+                    <p className="mt-3 max-w-2xl text-base font-medium leading-7 text-slate-500 dark:text-slate-400">
+                        Lessons are loaded from your backend topic and vocabulary
+                        data, so learners always practice real content.
+                    </p>
 
-                    <div className="grid grid-cols-2 gap-3 text-center sm:min-w-72">
-                        <div className="rounded-3xl bg-white/20 p-4">
-                            <p className="text-3xl font-black">
-                                {availableLessons}
-                            </p>
-                            <p className="text-xs font-black text-white/75">
-                                ready topics
-                            </p>
-                        </div>
-                        <div className="rounded-3xl bg-white/20 p-4">
-                            <p className="text-3xl font-black">
-                                {vocabularies.length}
-                            </p>
-                            <p className="text-xs font-black text-white/75">
-                                total words
-                            </p>
-                        </div>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-bold text-[#58CC02] dark:bg-green-950">
+                            <BookOpen className="h-4 w-4" />
+                            {availableLessons} ready topics
+                        </span>
+                        <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-4 py-2 text-sm font-bold text-[#1CB0F6] dark:bg-sky-950">
+                            <Brain className="h-4 w-4" />
+                            {vocabularies.length} total words
+                        </span>
                     </div>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-50 text-yellow-600 dark:bg-yellow-950 dark:text-yellow-300">
+                        <Crown className="h-6 w-6" />
+                    </div>
+                    <h2 className="mt-4 text-xl font-bold text-slate-950 dark:text-white">
+                        {isPremium ? "All lessons unlocked" : "Free plan"}
+                    </h2>
+                    <p className="mt-2 text-sm font-medium leading-6 text-slate-500 dark:text-slate-400">
+                        {isPremium
+                            ? "Premium learners can open every approved public topic."
+                            : "Free learners can study free topics and upgrade when a premium lesson appears."}
+                    </p>
                 </div>
             </section>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 className="text-2xl font-black text-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         Lesson Library
                     </h2>
-                    <p className="font-semibold text-slate-500">
+                    <p className="font-medium text-slate-500 dark:text-slate-400">
                         Empty topics are locked until vocabulary is added.
                     </p>
                 </div>
@@ -200,23 +194,23 @@ function Learn() {
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Search topics"
-                        className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 font-bold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100"
+                        className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 font-semibold outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                     />
                 </div>
             </div>
 
             {topics.length === 0 ? (
-                <div className="rounded-[2rem] border border-slate-100 bg-white p-8 text-center shadow-sm">
+                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <BookOpen className="mx-auto mb-4 h-12 w-12 text-slate-300" />
-                    <h2 className="text-2xl font-black text-slate-900">
+                    <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                         No topics found
                     </h2>
-                    <p className="mt-2 font-semibold text-slate-500">
+                    <p className="mt-2 font-medium text-slate-500 dark:text-slate-400">
                         Create topics first before starting a lesson.
                     </p>
                     <Link
                         to="/topics"
-                        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-6 py-3 font-black text-white"
+                        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-6 py-3 font-bold text-white focus:outline-none focus:ring-4 focus:ring-green-100"
                     >
                         Manage Topics
                         <ArrowRight className="h-4 w-4" />
@@ -234,22 +228,22 @@ function Learn() {
                         return (
                             <article
                                 key={topic.id}
-                                className={`rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm transition-all duration-300 ${
+                                className={`rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900 ${
                                     hasWords
-                                        ? "hover:-translate-y-1 hover:shadow-xl"
+                                        ? "hover:-translate-y-0.5 hover:border-green-200 hover:shadow-lg dark:hover:border-green-900"
                                         : "opacity-70"
                                 }`}
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
                                     <div
-                                        className={`flex h-16 w-16 items-center justify-center rounded-3xl ${topic.color}`}
+                                        className={`flex h-14 w-14 items-center justify-center rounded-2xl ${topic.color}`}
                                     >
-                                        <Icon className="h-8 w-8" />
+                                        <Icon className="h-7 w-7" />
                                     </div>
 
                                     <div className="flex flex-col items-end gap-2">
                                         <span
-                                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-black ${
+                                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${
                                                 isPremiumTopic
                                                     ? "bg-yellow-100 text-yellow-600"
                                                     : "bg-green-50 text-[#58CC02]"
@@ -261,7 +255,7 @@ function Learn() {
                                             {isPremiumTopic ? "Premium" : "Free"}
                                         </span>
                                         <span
-                                            className={`rounded-full px-3 py-1 text-xs font-black ${
+                                            className={`rounded-full px-3 py-1 text-xs font-bold ${
                                                 canStart
                                                     ? "bg-green-50 text-[#58CC02]"
                                                     : "bg-slate-100 text-slate-400"
@@ -272,17 +266,17 @@ function Learn() {
                                     </div>
                                 </div>
 
-                                <h3 className="break-words text-xl font-black text-slate-900">
+                                <h3 className="break-words text-xl font-bold text-slate-950 dark:text-white">
                                     {topic.name}
                                 </h3>
-                                <p className="mt-2 min-h-10 text-sm font-semibold text-slate-500">
+                                <p className="mt-2 min-h-10 text-sm font-medium leading-6 text-slate-500 dark:text-slate-400">
                                     {topic.description ||
                                         "Learn this topic with flip cards and pronunciation."}
                                 </p>
 
-                                <div className="mt-5 flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+                                <div className="mt-5 flex items-center gap-3 rounded-2xl bg-slate-50 p-3 dark:bg-slate-950">
                                     <Brain className="h-5 w-5 text-[#1CB0F6]" />
-                                    <span className="text-sm font-black text-slate-600">
+                                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
                                         {topic.vocabularyCount} vocabulary words
                                     </span>
                                 </div>
@@ -290,7 +284,7 @@ function Learn() {
                                 {canStart ? (
                                     <Link
                                         to={`/learn/${topic.id}`}
-                                        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-5 py-3 font-black text-white shadow-lg shadow-green-100 transition-all hover:-translate-y-1"
+                                        className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-[#58CC02] px-5 py-3 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-100"
                                     >
                                         <PlayCircle className="h-5 w-5" />
                                         Start Flashcards
@@ -299,7 +293,7 @@ function Learn() {
                                     <button
                                         type="button"
                                         onClick={() => setPremiumModalOpen(true)}
-                                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-bold text-yellow-700 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                                     >
                                         <Lock className="h-5 w-5" />
                                         Unlock Premium
@@ -308,7 +302,7 @@ function Learn() {
                                     <button
                                         type="button"
                                         disabled
-                                        className="mt-5 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-slate-100 px-5 py-3 font-black text-slate-400"
+                                        className="mt-5 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-slate-100 px-5 py-3 font-bold text-slate-400 dark:bg-slate-800"
                                     >
                                         <BookOpen className="h-5 w-5" />
                                         No Words Yet

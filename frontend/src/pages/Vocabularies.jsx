@@ -218,7 +218,7 @@ function Vocabularies() {
     };
 
     return (
-        <div>
+        <div className="mx-auto max-w-7xl">
             <PremiumLockedModal
                 open={premiumModalOpen}
                 title="Vocabulary limit reached"
@@ -226,19 +226,23 @@ function Vocabularies() {
                 onClose={() => setPremiumModalOpen(false)}
             />
 
-            <div className="flex items-center justify-between mb-6">
+            <section className="mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#1CB0F6] via-[#58CC02] to-[#CE82FF] p-6 text-white shadow-xl shadow-sky-100 dark:shadow-none md:p-8">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-800">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold">
+                        <Crown className="h-4 w-4" />
+                        Vocabulary workspace
+                    </div>
+                    <h1 className="text-3xl font-bold md:text-5xl">
                         Manage Vocabulary
                     </h1>
 
-                    <p className="text-slate-500 mt-1">
+                    <p className="mt-3 max-w-2xl font-medium text-white/90">
                         Create, update, and manage English vocabulary.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <section className="mb-6 rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+            <section className="mb-6 rounded-[1.5rem] border border-sky-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
                         <div
@@ -255,10 +259,10 @@ function Vocabularies() {
                             )}
                         </div>
                         <div>
-                            <p className="text-sm font-black text-slate-400">
+                            <p className="text-sm font-bold text-slate-400">
                                 Vocabulary Creator
                             </p>
-                            <p className="font-black text-slate-800">
+                            <p className="font-bold text-slate-950 dark:text-white">
                                 {isPremium
                                     ? "Unlimited custom vocabularies"
                                     : "Free plan: up to 30 custom vocabularies"}
@@ -270,7 +274,7 @@ function Vocabularies() {
                         <button
                             type="button"
                             onClick={() => setPremiumModalOpen(true)}
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-black text-yellow-700 transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-100"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-100 px-5 py-3 font-bold text-yellow-700 transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-yellow-100"
                         >
                             <Crown className="h-5 w-5" />
                             Upgrade
@@ -281,20 +285,20 @@ function Vocabularies() {
 
             <form
                 onSubmit={handleSearch}
-                className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 mb-6"
+                className="mb-6 rounded-[1.5rem] border border-sky-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
                 <div className="flex flex-col md:flex-row gap-4">
                     <input
                         type="text"
                         placeholder="Search vocabulary by word or meaning..."
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 flex-1 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={searchKeyword}
                         onChange={(e) => setSearchKeyword(e.target.value)}
                     />
 
                     <button
                         type="submit"
-                        className="bg-[#1CB0F6] text-white px-7 py-4 rounded-2xl font-black shadow-md hover:scale-[1.02] transition-all"
+                        className="rounded-2xl bg-[#1CB0F6] px-7 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-sky-100"
                     >
                         Search
                     </button>
@@ -303,7 +307,7 @@ function Vocabularies() {
                         <button
                             type="button"
                             onClick={handleClearSearch}
-                            className="bg-slate-100 text-slate-600 px-7 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all"
+                            className="rounded-2xl bg-slate-100 px-7 py-4 font-bold text-slate-600 transition-all hover:-translate-y-0.5 hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:bg-slate-800 dark:text-slate-200"
                         >
                             Clear
                         </button>
@@ -322,14 +326,14 @@ function Vocabularies() {
 
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-6"
+                className="mb-6 rounded-[1.5rem] border border-green-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
-                <h2 className="text-xl font-black text-slate-800 mb-4">
+                <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
                     {editingId ? "Edit Vocabulary" : "Add New Vocabulary"}
                 </h2>
 
                 {errorMessage && (
-                    <div className="mb-4 bg-red-50 text-red-500 px-4 py-3 rounded-2xl text-sm font-bold">
+                    <div className="mb-4 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-500 dark:bg-red-950/40">
                         {errorMessage}
                     </div>
                 )}
@@ -338,7 +342,7 @@ function Vocabularies() {
                     <input
                         name="word"
                         placeholder="Word"
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={form.word}
                         onChange={handleChange}
                     />
@@ -346,7 +350,7 @@ function Vocabularies() {
                     <input
                         name="meaning"
                         placeholder="Meaning"
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={form.meaning}
                         onChange={handleChange}
                     />
@@ -354,14 +358,14 @@ function Vocabularies() {
                     <input
                         name="exampleSentence"
                         placeholder="Example sentence"
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={form.exampleSentence}
                         onChange={handleChange}
                     />
 
                     <select
                         name="topicId"
-                        className="border border-slate-200 bg-slate-50 rounded-2xl p-4 outline-none focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 transition-all"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4 outline-none transition-all focus:border-[#58CC02] focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
                         value={form.topicId}
                         onChange={handleChange}
                     >
@@ -388,7 +392,7 @@ function Vocabularies() {
                 <div className="flex flex-col md:flex-row gap-4 mt-5">
                     <button
                         type="submit"
-                        className="bg-[#58CC02] text-white px-7 py-4 rounded-2xl font-black shadow-md hover:scale-[1.02] transition-all"
+                        className="rounded-2xl bg-[#58CC02] px-7 py-4 font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-100"
                     >
                         {editingId ? "Update Vocabulary" : "Add Vocabulary"}
                     </button>
@@ -397,7 +401,7 @@ function Vocabularies() {
                         <button
                             type="button"
                             onClick={resetForm}
-                            className="bg-slate-100 text-slate-600 px-7 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all"
+                            className="rounded-2xl bg-slate-100 px-7 py-4 font-bold text-slate-600 transition-all hover:-translate-y-0.5 hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:bg-slate-800 dark:text-slate-200"
                         >
                             Cancel
                         </button>
@@ -405,9 +409,9 @@ function Vocabularies() {
                 </div>
             </form>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-xl font-black text-slate-800">
+            <div className="overflow-hidden rounded-[1.5rem] border border-sky-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="border-b border-slate-100 p-6 dark:border-slate-800">
+                    <h2 className="text-xl font-bold text-slate-950 dark:text-white">
                         Vocabulary List
                     </h2>
                 </div>
@@ -430,7 +434,7 @@ function Vocabularies() {
                     <>
                         <div className="overflow-x-auto">
                             <table className="w-full min-w-[900px]">
-                                <thead className="bg-slate-50">
+                                <thead className="bg-sky-50 dark:bg-slate-950">
                                 <tr>
                                     <th className="text-left p-4 text-slate-500 text-sm">
                                         Word
@@ -467,9 +471,9 @@ function Vocabularies() {
                                     return (
                                         <tr
                                             key={vocabulary.id}
-                                            className="border-t border-slate-100"
+                                            className="border-t border-slate-100 dark:border-slate-800"
                                         >
-                                        <td className="p-4 font-black text-slate-800">
+                                        <td className="p-4 font-bold text-slate-950 dark:text-white">
                                             {vocabulary.word}
                                         </td>
 
@@ -482,7 +486,7 @@ function Vocabularies() {
                                         </td>
 
                                         <td className="p-4">
-                                                <span className="bg-green-50 text-[#58CC02] px-3 py-1 rounded-full text-sm font-black">
+                                                <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-bold text-[#58CC02] dark:bg-green-950">
                                                     {vocabulary.topicName ||
                                                         "No topic"}
                                                 </span>
@@ -491,25 +495,27 @@ function Vocabularies() {
                                         <td className="p-4">
                                             <div className="flex justify-end gap-3">
                                                 <button
+                                                    type="button"
                                                     onClick={() =>
                                                         handleEdit(
                                                             vocabulary
                                                         )
                                                     }
                                                     disabled={!canManageVocabulary}
-                                                    className="px-4 py-2 rounded-xl bg-blue-50 text-blue-500 font-black hover:bg-blue-100 transition-all disabled:cursor-not-allowed disabled:opacity-40"
+                                                    className="rounded-xl bg-sky-50 px-4 py-2 font-bold text-[#1CB0F6] transition-all hover:bg-sky-100 focus:outline-none focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-40"
                                                 >
                                                     Edit
                                                 </button>
 
                                                 <button
+                                                    type="button"
                                                     onClick={() =>
                                                         handleDelete(
                                                             vocabulary.id
                                                         )
                                                     }
                                                     disabled={!canManageVocabulary}
-                                                    className="px-4 py-2 rounded-xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all disabled:cursor-not-allowed disabled:opacity-40"
+                                                    className="rounded-xl bg-red-50 px-4 py-2 font-bold text-red-500 transition-all hover:bg-red-100 focus:outline-none focus:ring-4 focus:ring-red-100 disabled:cursor-not-allowed disabled:opacity-40"
                                                 >
                                                     Delete
                                                 </button>
@@ -523,12 +529,12 @@ function Vocabularies() {
                         </div>
 
                         {!isSearching && totalPages > 1 && (
-                            <div className="flex items-center justify-between p-5 border-t border-slate-100">
+                            <div className="flex items-center justify-between border-t border-slate-100 p-5 dark:border-slate-800">
                                 <button
                                     type="button"
                                     onClick={handlePreviousPage}
                                     disabled={currentPage === 0}
-                                    className="px-5 py-3 rounded-2xl bg-slate-100 text-slate-600 font-black disabled:opacity-40"
+                                    className="rounded-2xl bg-slate-100 px-5 py-3 font-bold text-slate-600 transition-all hover:bg-slate-200 disabled:opacity-40 dark:bg-slate-800 dark:text-slate-200"
                                 >
                                     Previous
                                 </button>
@@ -541,7 +547,7 @@ function Vocabularies() {
                                     type="button"
                                     onClick={handleNextPage}
                                     disabled={currentPage >= totalPages - 1}
-                                    className="px-5 py-3 rounded-2xl bg-[#58CC02] text-white font-black disabled:opacity-40"
+                                    className="rounded-2xl bg-[#58CC02] px-5 py-3 font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-40"
                                 >
                                     Next
                                 </button>

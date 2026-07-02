@@ -1,19 +1,24 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ThemeContext = createContext();
+const THEME_STORAGE_KEY = "theme";
 
 export function ThemeProvider({ children }) {
-    const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+    const [theme, setTheme] = useState("light");
 
     useEffect(() => {
-        document.documentElement.classList.toggle("dark", theme === "dark");
-        localStorage.setItem("theme", theme);
+        const root = document.documentElement;
+
+        root.classList.toggle("dark", theme === "dark");
+        root.dataset.theme = theme;
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
     }, [theme]);
 
     const value = useMemo(
         () => ({
             theme,
             isDark: theme === "dark",
+            setTheme,
             toggleTheme: () =>
                 setTheme((currentTheme) =>
                     currentTheme === "dark" ? "light" : "dark"

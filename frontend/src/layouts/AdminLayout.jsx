@@ -23,21 +23,21 @@ function AdminLayout() {
     };
 
     const navLinkClass = ({ isActive }) =>
-        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 ${
+        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 ${
             isActive
                 ? "bg-[#1CB0F6] text-white shadow-lg shadow-sky-100"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-sky-50 hover:text-[#1CB0F6] dark:text-slate-300 dark:hover:bg-sky-950"
         }`;
 
     return (
         <div className="min-h-screen bg-[#F6F8FB] text-slate-800">
-            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col border-r border-slate-100 bg-white p-6 lg:flex">
+            <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col border-r border-sky-100 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 lg:flex">
                 <div className="mb-8 flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1CB0F6] shadow-lg shadow-sky-100">
                         <ShieldCheck className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-slate-900">
+                        <h1 className="text-2xl font-bold text-slate-900">
                             Admin
                         </h1>
                         <p className="text-xs font-bold text-slate-400">
@@ -50,13 +50,13 @@ function AdminLayout() {
                     <PreferenceControls />
                 </div>
 
-                <div className="mb-7 rounded-[1.75rem] border border-slate-100 bg-slate-50 p-4">
+                <div className="mb-7 rounded-[1.5rem] border border-sky-100 bg-sky-50/70 p-4 dark:border-slate-800 dark:bg-slate-950">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#1CB0F6] shadow-sm">
                             <UserRound className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
-                            <p className="truncate text-sm font-black text-slate-800">
+                            <p className="truncate text-sm font-bold text-slate-800">
                                 {user?.username || user?.email || "Admin"}
                             </p>
                             <p className="text-xs font-bold text-slate-400">
@@ -88,21 +88,21 @@ function AdminLayout() {
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-black text-red-500 transition-all hover:bg-red-50"
+                    className="mt-6 flex w-full items-center gap-3 rounded-2xl px-4 py-3 font-bold text-red-500 transition-all hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-100"
                 >
                     <LogOut className="h-5 w-5" />
                     {t("logout")}
                 </button>
             </aside>
 
-            <header className="sticky top-0 z-20 border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
+            <header className="sticky top-0 z-20 border-b border-sky-100 bg-white/95 px-4 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 lg:hidden">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1CB0F6]">
                             <ShieldCheck className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-slate-900">
+                            <h1 className="text-lg font-bold text-slate-900">
                                 Admin Console
                             </h1>
                             <p className="text-xs font-bold text-slate-400">
@@ -127,10 +127,10 @@ function AdminLayout() {
                     <NavLink
                         to="/admin/dashboard"
                         className={({ isActive }) =>
-                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-black ${
+                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-bold ${
                                 isActive
                                     ? "bg-sky-50 text-[#1CB0F6]"
-                                    : "bg-slate-50 text-slate-500"
+                                    : "bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                             }`
                         }
                     >
@@ -140,10 +140,10 @@ function AdminLayout() {
                     <NavLink
                         to="/admin/analytics"
                         className={({ isActive }) =>
-                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-black ${
+                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-bold ${
                                 isActive
                                     ? "bg-sky-50 text-[#1CB0F6]"
-                                    : "bg-slate-50 text-slate-500"
+                                    : "bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                             }`
                         }
                     >
@@ -152,7 +152,7 @@ function AdminLayout() {
                     </NavLink>
                     <NavLink
                         to="/dashboard"
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-black text-slate-500"
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                     >
                         <Home className="h-4 w-4" />
                         App
@@ -160,10 +160,10 @@ function AdminLayout() {
                     <NavLink
                         to="/admin/topics"
                         className={({ isActive }) =>
-                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-black ${
+                            `flex items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-bold ${
                                 isActive
                                     ? "bg-sky-50 text-[#1CB0F6]"
-                                    : "bg-slate-50 text-slate-500"
+                                    : "bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                             }`
                         }
                     >
